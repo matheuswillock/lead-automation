@@ -15,16 +15,25 @@ export default class OutputSearchLead {
     this.credits = credits;
   }
 
-  static ToValidOutput(
-    searchParameters: SearchParameters,
-    places: Place[],
-    credits: number
+  static CreateOutput(
+    searchParameters?: SearchParameters,
+    places?: Place[],
+    credits?: number
   ): Output {
     const result = new OutputSearchLead(
       searchParameters,
       places,
       credits
     );
+
+    if (!result.places || result.places.length === 0) {
+      return new Output(
+        false,
+        [],
+        ["No places found for the given search parameters"],
+        null
+      );
+    }
 
     return new Output(
       true,

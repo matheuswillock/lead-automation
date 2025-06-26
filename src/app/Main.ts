@@ -1,5 +1,4 @@
-import SerperService from "@/services/SerperService/Serper";
-import { InputSerper } from '@/services/SerperService/Serper';
+import { GetLeads, GetLocations, InputSerper } from '@/services/SerperService/Serper';
 import OutputSearchLead from "./api/serperApi/Dto/OutputSearchLead";
 import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
 import { useWhatsAppSender } from "@/hooks/WhatsappHooks/useWhatsAppSender";
@@ -8,6 +7,15 @@ interface MainProps {
   input: InputSerper;
   lastPage: number;
   apiKey?: string;
+}
+
+export const LoadLocations = async (query: string, limit: number) => {
+  try {
+    const locations = await GetLocations(query, limit);
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    return [];
+  }
 }
 
 export const Main = async ({input, lastPage, apiKey} : MainProps) => {
@@ -34,7 +42,7 @@ export const Main = async ({input, lastPage, apiKey} : MainProps) => {
     console.log(`Fetching page ${page}...`);
 
     try {
-      const results = await SerperService(input, resolvedApiKey);
+      const results = await GetLeads(input, resolvedApiKey);
 
       if(searchLeads.searchParameters == undefined) {
         searchLeads.searchParameters = results.searchParameters;
