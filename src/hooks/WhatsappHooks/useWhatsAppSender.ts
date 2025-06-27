@@ -60,5 +60,5 @@ export function useWhatsAppSender() {
     client.initialize();
   }, []);
 
-  return { sendToWhatsApp, status, error, qrCode, isSending  };
+  return { sendToWhatsApp, status, error, qrCode, isSending };
 }

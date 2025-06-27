@@ -1,4 +1,3 @@
-// tailwind.config.ts
 import type { Config } from 'tailwindcss';
 
 export default {
@@ -7,7 +6,7 @@ export default {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/**/*.{js,ts,jsx,tsx,mdx}'
   ],
   theme: {
     extend: {
@@ -64,7 +63,13 @@ export default {
       },
       animation: {},
       keyframes: {},
-			dropShadow: {}
+      dropShadow: {
+				'3xl': '0 35px 35px rgba(0, 0, 0, 0.25)',
+				'4xl': [
+					'0 35px 35px rgba(0, 0, 0, 0.25)',
+					'0 45px 65px rgba(0, 0, 0, 0.15)'
+				]
+			}
     }
   }
 } satisfies Config;

@@ -7,6 +7,8 @@ interface MainProps {
   input: InputSerper;
   lastPage: number;
   apiKey?: string;
+  SendToWhatsApp(send: boolean): Promise<void>;
+  message?: string;
 }
 
 export const LoadLocations = async (query: string, limit: number) => {
