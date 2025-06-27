@@ -87,7 +87,7 @@ export default function Home() {
               className="hover:cursor-pointer"
               onClick={() => setIsDark((prev) => !prev)}
             >
-              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+              {isDark ? <Sun size={30} /> : <Moon size={30} />}
             </Button>
           </div>
           <p className="text-muted-foreground mt-4">
