@@ -10,8 +10,8 @@ export const FormatPhoneNumber = (inputPhoneNumber: string): OutputPhoneFormatte
   const ddd = numbers.substring(0, 2);
   const numero = numbers.substring(2);
 
-  let formatted = `${ddd}${numero.substring(0, numero.length - 4)}-${numero.substring(numero.length - 4)}`;
-  let whatsappLink = `https://wa.me/55${ddd}${numero}`;
+  const formatted = `${ddd}${numero.substring(0, numero.length - 4)}-${numero.substring(numero.length - 4)}`;
+  const whatsappLink = `https://wa.me/55${ddd}${numero}`;
 
   return new OutputPhoneFormatter(formatted, whatsappLink);
 }

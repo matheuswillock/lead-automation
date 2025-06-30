@@ -1,4 +1,4 @@
-
+'use client'
 import InputSearchLead from "@/domain/Dto/InputSearchLead";
 import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
 import { OutputLocations } from '../../domain/Dto/OutputLocations';
@@ -37,7 +37,7 @@ export const GetLeads = async (
 
 const loadLeads = async (input: InputSerper, apiKey?: string): Promise<OutputSearchLead | null> => {
   try {
-    const res = await fetch("/api/search", {
+    const res = await fetch("http://localhost:3001/api/api/search", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ input, apiKey }),
@@ -84,7 +84,7 @@ export const GetLocations = async (query: string, limit: number) : Promise<Outpu
 
 const loadLocations = async (input: InputLocations): Promise<OutputLocations> => {
   try {
-    const res = await fetch("/api/locations", {
+    const res = await fetch("http://localhost:3001/api/locations", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(input),

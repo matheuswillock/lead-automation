@@ -59,7 +59,7 @@ export function LocationInput({
       console.log("Filtered locations:", filtered);
     }
 
-    let locationsToSelect = filtered.map((location) => ({
+    const locationsToSelect = filtered.map((location) => ({
       name: location.name ?? "",
       canonicalName: location.canonicalName ?? "",
       CountryFlag: location.countryCode ? getCountryFlagUrl(location.countryCode) : "",
