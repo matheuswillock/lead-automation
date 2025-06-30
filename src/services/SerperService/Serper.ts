@@ -1,9 +1,9 @@
-import { SerperApi } from "@/app/api/serperApi/routes";
-// import { inputSerper } from "./dto/InputSerper";
-import InputSearchLead from "@/app/api/serperApi/Dto/InputSearchLead";
-import OutputSearchLead from "@/app/api/serperApi/Dto/OutputSearchLead";
-import { OutputLocations } from '../../app/api/serperApi/Dto/OutputLocations';
-import { InputLocations } from "@/app/api/serperApi/Dto/InputLocations";
+
+import InputSearchLead from "@/domain/Dto/InputSearchLead";
+import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
+import { OutputLocations } from '../../domain/Dto/OutputLocations';
+import { InputLocations } from "@/domain/Dto/InputLocations";
+import { Output } from "@/domain/Output";
 
 export interface InputSerper {
   query: string;
@@ -15,39 +15,100 @@ export interface InputSerper {
 
 export const GetLeads = async (
   input: InputSerper,
-  apiKey: string
+  apiKey?: string
 ) : Promise<OutputSearchLead> => {
   try {
-    if (!input || !apiKey) {
-      throw new Error("Invalid input or API key");
-    }
-    const generateLeads = await SerperApi.search(
-      InputSearchLead.fromSearchLead(input),
-      apiKey
-    );
-
-    if (!generateLeads.isValid) {
-      throw new Error("No results found");
+    if (!input) {
+      throw new Error("Invalid input: InputSerper is required");
     }
 
-    return generateLeads.result as OutputSearchLead;
+    const leads: OutputSearchLead | null = await loadLeads(input, apiKey)
+
+    if (!leads) {
+      throw new Error("No leads found");
+    }
+
+    return leads as OutputSearchLead;
   } catch (error) {
     console.error("Error in SerperService:", error);
     throw new Error("Failed to fetch data from Serper API");
   }
 };
 
-export const GetLocations = async (query: string, limit: number) : Promise<OutputLocations>  => {
+const loadLeads = async (input: InputSerper, apiKey?: string): Promise<OutputSearchLead | null> => {
   try {
-    const locations = await SerperApi.getLocations(new InputLocations(query, limit));
+    const res = await fetch("/api/search", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ input, apiKey }),
+    });
+    const data: Output = await res.json();
 
-    if (!locations || !locations.isValid) {
-      throw new Error("No locations found");
+    if (!res.ok) {
+      console.warn("Failed to fetch leads:", data.errorMessages || "Unknown error");
+      return null;
     }
 
-    return locations.result as OutputLocations;
+    if (!data || !data.isValid) {
+      console.warn("No leads found or invalid response");
+      return null;
+    }
+
+    console.log("Leads fetched successfully:", data.result);
+    return data.result as OutputSearchLead;
+  } catch (err) {
+    console.error("Error fetching leads:", err);
+    return null;
+  }
+};
+
+export const GetLocations = async (query: string, limit: number) : Promise<OutputLocations>  => {
+  try {
+    console.log("Fetching locations for query:", query, "with limit:", limit);
+
+    // TODO: Chamar a API Serper para buscar locais
+    const fetchedLocations = await loadLocations(new InputLocations(query, limit));
+
+    if (!fetchedLocations || !fetchedLocations.locations || fetchedLocations.locations.length === 0) {
+      console.warn("No locations found or invalid response");
+      return new OutputLocations([]);
+    }
+
+    console.log("Locations fetched successfully:", fetchedLocations.locations);
+    return fetchedLocations as OutputLocations;
   } catch (error) {
     console.error("Error fetching locations:", error);
-    throw new Error("Failed to fetch locations from Serper API");
+    return new OutputLocations([]);
   }
 }
+
+const loadLocations = async (input: InputLocations): Promise<OutputLocations> => {
+  try {
+    const res = await fetch("/api/locations", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    });
+    const data: Output = await res.json();
+
+    if (!res.ok) {
+      console.warn("Failed to fetch locations:", data.errorMessages || "Unknown error");
+      return new OutputLocations([]);
+    }
+
+    if (!data || !data.isValid) {
+      console.warn("No locations found or invalid response");
+      return new OutputLocations([]);
+    }
+
+    console.log("Locations fetched successfully:", data.result);
+    if (!data.result.locations || data.result.locations.length === 0) {
+      console.warn("No locations found in response");
+      return new OutputLocations([]);
+    }
+    return data.result as OutputLocations;
+  } catch (err) {
+    console.error("Error fetching locations:", err);
+    return new OutputLocations([]);
+  }
+};

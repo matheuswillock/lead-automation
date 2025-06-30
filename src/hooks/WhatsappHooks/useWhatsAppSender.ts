@@ -10,7 +10,7 @@ export function useWhatsAppSender() {
   const [qrCode, setQrCode] = useState<string | null>(null);
   const [isSending, setIsSending] = useState<boolean>(false);
 
-  const sendToWhatsApp = useCallback(async (leadsTable: TableCsvRow[] | TableCsvRow) => {
+  const send = useCallback(async (leadsTable: TableCsvRow[] | TableCsvRow) => {
     setStatus("Iniciando envio...");
 
     setError(null);
@@ -60,5 +60,5 @@ export function useWhatsAppSender() {
     client.initialize();
   }, []);
 
-  return { sendToWhatsApp, status, error, qrCode, isSending };
+  return { send, status, error, qrCode, isSending };
 }

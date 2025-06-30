@@ -12,12 +12,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import Image from "next/image";
 import { useState, useEffect } from "react";
-import { Download, BotMessageSquare, Search, Sun, Moon } from "lucide-react";
+import { BotMessageSquare } from "lucide-react";
+import { ModeToggle } from "@/components/ui/modeToggle";
+import { LocationInput } from "@/components/ui/LocationInput";
+import { MessageCircleMoreIcon } from "@/components/ui/message-circle-more";
+import { DownloadIcon } from "@/components/ui/download";
+import { SearchIcon } from "@/components/ui/search";
+import { FileCheck2Icon } from "@/components/ui/file-check-2";
+import { MapPinIcon } from "@/components/ui/map-pin";
+import { MapPinHouseIcon } from "@/components/ui/map-pin-house";
+import { MainProps } from "@/app/api/useCases/Main";
+import { InputSerper } from "@/services/SerperService/Serper";
 
 export default function Home() {
-  const [country, setCountry] = useState<string>("Brasil");
+  const [country, setCountry] = useState<string>("");
   const [location, setLocation] = useState<string>("Cajamar, SP");
   const [leadType, setLeadType] = useState<string>("Pizzaria");
   const [sendToWhatsApp, setSendToWhatsApp] = useState<boolean>(true);
@@ -25,20 +34,46 @@ export default function Home() {
     `Olá! Tudo bem? 😊\n\nAqui é o Cheffia — uma solução moderna para gestão de pedidos e pagamentos em pizzarias!\n\nVocê consegue automatizar pedidos, integrar pagamentos via QR Code e muito mais.\n\nGostaria de saber mais? É só responder aqui. 🚀`
   );
 
+  const input: InputSerper = {
+    query: leadType,
+    location: location,
+    country: country,
+    language: "pt-br",
+    page: 1,
+  };
+
+  const mainProps: MainProps = {
+    input,
+    lastPage: 5,
+    sendToWhatsApp,
+    message: whatsappMessage,
+  };
+
   // const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDark, setIsDark] = useState<boolean>(false);
+
+  // Exemplo de chamada no seu componente React
+  const handleGenerateLeads = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/generate-leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(mainProps),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Erro ao gerar leads");
+      // Sucesso!
+    } catch (err) {
+      // Trate o erro
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // TODO: Implementar a lógica de busca de leads usando o SerperService
   useEffect(() => {}, []);
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDark]);
 
   // TODO: Imeplementar método para baixar o CVS no CsvCore
   // Função para baixar os leads como CSV
@@ -77,18 +112,9 @@ export default function Home() {
         <header className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h1 className="font-heading text-3xl md:text-4xl font-bold">
-              Gerador de lads
+              Gerador de leads
             </h1>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              aria-label="Alternar tema"
-              className="hover:cursor-pointer"
-              onClick={() => setIsDark((prev) => !prev)}
-            >
-              {isDark ? <Sun size={30} /> : <Moon size={30} />}
-            </Button>
+            <ModeToggle />
           </div>
           <p className="text-muted-foreground mt-4">
             Configure os parâmetros e gere sua lista de leads em segundos.
@@ -98,17 +124,32 @@ export default function Home() {
         <main className="grid grid-col-1 lg:grid-cols-5 gap-8">
           <section className="lg:col-span-2 flex flex-col gap-8">
             <Card className=" ">
-              <CardHeader>
-                <CardTitle>1. Defina sua busca</CardTitle>
+              <CardHeader className="flex items-center space-x-2">
+                <MapPinIcon />
+                <CardTitle>Defina sua busca</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>País</Label>
-                  <Input placeholder="Ex: Brazil"></Input>
+                  <LocationInput
+                    placeholder="Ex: Brazil"
+                    onLocationSelect={(location) =>
+                      setCountry(location.canonicalName ?? "")
+                    }
+                    initialValue={country}
+                    filterType="Country"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Localização</Label>
-                  <Input placeholder="Ex: Barueri"></Input>
+                  <LocationInput
+                    placeholder="Ex: Sao Paulo"
+                    onLocationSelect={(location) =>
+                      setCountry(location.canonicalName ?? "")
+                    }
+                    initialValue={country}
+                    filterType="City"
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label>Tipo de Lead</Label>
@@ -118,13 +159,19 @@ export default function Home() {
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>2. Configure a Mensagem</CardTitle>
+              <CardHeader className="flex items-center space-x-2">
+                <MessageCircleMoreIcon />
+                <CardTitle>Configure a Mensagem</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center space-x-2">
-                  <Switch />
-                  <Label className="ml-2">Disparar para o WhatsApp</Label>
+                <div className="flex items-center space-x-4">
+                  <Switch className="hover:cursor-pointer" />
+                  <Label className="">
+                    Disparar para o
+                    <span className="font-semibold transition-all duration-200 hover:underline hover:text-primary-foreground decoration-primary hover:underline-offset-4">
+                      WhatsApp
+                    </span>
+                  </Label>
                 </div>
                 <div className="space-y-2">
                   <Label>Mensagem</Label>
@@ -132,7 +179,17 @@ export default function Home() {
                 </div>
               </CardContent>
               <CardFooter>
-                <Button className="hover:cursor-pointer">Gerar Leads</Button>
+                <Button
+                  variant="secondary"
+                  className="hover:cursor-pointer font-semibold hover:bg-primary/80"
+                  onClick={async () => {
+                    // TODO: Implementar o handler que faz a requisição para gerar os leads
+                    await handleGenerateLeads();
+                  }}
+                >
+                  <SearchIcon />
+                  Gerar Leads
+                </Button>
               </CardFooter>
             </Card>
           </section>
@@ -140,13 +197,15 @@ export default function Home() {
           <section className="lg:col-span-3">
             <Card className="h-full">
               <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle>3. Resultados</CardTitle>
+                <div className="flex items-center space-x-2">
+                  <FileCheck2Icon />
+                  <CardTitle>Resultados</CardTitle>
+                </div>
                 <Button
-                  variant="outline"
-                  size="sm"
-                  className="hover:cursor-pointer"
+                  variant="secondary"
+                  className="hover:cursor-pointer hover:bg-primary/80 font-semibold"
                 >
-                  <Download />
+                  <DownloadIcon />
                   Baixar CSV
                 </Button>
               </CardHeader>

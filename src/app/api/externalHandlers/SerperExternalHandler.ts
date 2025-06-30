@@ -1,19 +1,26 @@
 import axios from "axios";
-import InputSearchLead from "./Dto/InputSearchLead";
-import OutputSearchLead from './Dto/OutputSearchLead';
+import InputSearchLead from "../../../domain/Dto/InputSearchLead";
+import OutputSearchLead from '../../../domain/Dto/OutputSearchLead';
 import { Output } from "@/domain/Output";
-import { OutputLocations } from "./Dto/OutputLocations";
-import { InputLocations } from "./Dto/InputLocations";
+import { OutputLocations } from "../../../domain/Dto/OutputLocations";
+import { InputLocations } from "../../../domain/Dto/InputLocations";
 
-const BASE_URL = process.env.NEXT_PUBLIC_SERPER_API_URL;
-const DEV_BASE_URL = process.env.NEXT_PUBLIC_SERPER_DEV_API_URL;
+const BASE_URL = process.env.SERPER_API_URL;
+const DEV_BASE_URL = process.env.SERPER_DEV_API_URL;
+const API_KEY = process.env.SERPER_API_KEY;
 
 export const SerperApi = {
-  search: async (query: InputSearchLead, apiKey: string): Promise<Output> => {
+  search: async (query: InputSearchLead, apiKey?: string): Promise<Output> => {
     try {
+
+      const key = apiKey ?? API_KEY;
+      if (!query || !key) {
+        throw new Error("Invalid query or API key");
+      }
+
       const response = await axios.post(`${BASE_URL}/search`, query, {
         headers: {
-          "X-API-KEY": apiKey || process.env.SERP_API_KEY || "",
+          "X-API-KEY": key,
         },
       });
 
@@ -44,6 +51,7 @@ export const SerperApi = {
 
   getLocations: async (input: InputLocations): Promise<Output> => {
     try {
+      console.log("url:", `${DEV_BASE_URL}/locations`);
       const response = await axios.get(`${DEV_BASE_URL}/locations`, {
         params: {
           q: input.query,
@@ -51,11 +59,15 @@ export const SerperApi = {
         },
       });
 
-      if (!response.data || !response.data.locations || response.data.locations.length === 0) {
+      console.log("Response from Serper API:", response.data);
+
+      if (!response.data || response.data.length === 0) {
+        console.warn("No locations found");
         return OutputLocations.CreateOutput([]);
       }
 
-      return OutputLocations.CreateOutput(response.data.locations || []);
+      console.log("Locations fetched successfully:", response.data);
+      return OutputLocations.CreateOutput(response.data || []);
     } catch (error: any) {
       console.error("Error in SerperApi.getLocations:", error);
       if (error.response) {
@@ -67,7 +79,8 @@ export const SerperApi = {
       } else {
         console.error("Error message:", error.message);
       }
-      throw error;
+      console.warn("Returning empty locations due to error");
+      return OutputLocations.CreateOutput([]);
     }
   }
 };

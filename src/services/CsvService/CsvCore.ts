@@ -1,4 +1,4 @@
-import OutputSearchLead, { Place } from "@/app/api/serperApi/Dto/OutputSearchLead";
+import OutputSearchLead, { Place } from "@/domain/Dto/OutputSearchLead";
 import { FormatPhoneNumber } from "../helpers/PhoneFormatter";
 import XLSX from "xlsx";
 

@@ -1,50 +1,44 @@
-import { GetLeads, GetLocations, InputSerper } from '@/services/SerperService/Serper';
-import OutputSearchLead from "./api/serperApi/Dto/OutputSearchLead";
+import { GetLeads, InputSerper } from '@/services/SerperService/Serper';
+import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
 import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
-import { useWhatsAppSender } from "@/hooks/WhatsappHooks/useWhatsAppSender";
+// import { useWhatsAppSender } from "@/hooks/WhatsappHooks/useWhatsAppSender";
 
-interface MainProps {
+export interface MainProps {
   input: InputSerper;
   lastPage: number;
   apiKey?: string;
-  SendToWhatsApp(send: boolean): Promise<void>;
+  sendToWhatsApp: boolean;
   message?: string;
 }
 
-export const LoadLocations = async (query: string, limit: number) => {
-  try {
-    const locations = await GetLocations(query, limit);
-  } catch (error) {
-    console.error('Error fetching locations:', error);
-    return [];
-  }
-}
-
-export const Main = async ({input, lastPage, apiKey} : MainProps) => {
-  const { sendToWhatsApp, status, error, qrCode, isSending } = useWhatsAppSender();
+export const Main = async ({input, lastPage, apiKey, sendToWhatsApp} : MainProps) => {
+  // const { send, status, error, qrCode, isSending } = useWhatsAppSender();
   const searchLeads: OutputSearchLead = new OutputSearchLead();
   searchLeads.credits = 0;
   console.log('--- Started ---');
 
-  if (!input) {
-    console.error('Query is required.');
-    return;
-  }
+  // if (!input) {
+  //   console.error('Query is required.');
+  //   return;
+  // }
 
   console.log(`Searching for: ${input.query} in location: ${input.location || 'anywhere'}`);
 
-  const resolvedApiKey = apiKey ?? process.env.SERP_API_KEY;
-  if (!resolvedApiKey) {
-    console.error('API key is required.');
-    return;
-  }
+  // const resolvedApiKey = apiKey ?? process.env.SERP_API_KEY;
+  // console.log(`Using API key: ${resolvedApiKey}`);
+  // if (!resolvedApiKey) {
+  //   console.error('API key is required.');
+  //   return;
+  // }
 
   for (let page = input.page; page < lastPage ; page++) {
     input.page = page;
     console.log(`Fetching page ${page}...`);
 
     try {
-      const results = await GetLeads(input, resolvedApiKey);
+      console.log(`Fetching leads for query: ${input.query}, location: ${input.location}, page: ${input.page}`);
+      const results = await GetLeads(input);
+      console.log(`Leads fetched successfully: ${JSON.stringify(results)}`);
 
       if(searchLeads.searchParameters == undefined) {
         searchLeads.searchParameters = results.searchParameters;
@@ -58,6 +52,8 @@ export const Main = async ({input, lastPage, apiKey} : MainProps) => {
 
       searchLeads.credits += 1;
 
+
+
     } catch (error) {
       console.error('Error fetching leads:', error);
       return;
@@ -70,6 +66,8 @@ export const Main = async ({input, lastPage, apiKey} : MainProps) => {
     return;
   }
   const { filename, content } = csvResult;
+
+  console.log(`CSV generated successfully: ${filename}`);
 
   console.log(`CSV generated successfully. Total pages searched: ${lastPage}`);
   console.log(`Total pages processed: ${input.page}`);

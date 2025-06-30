@@ -23,14 +23,14 @@ export class LocationData {
   canonicalName: string | undefined;
   googleId: string | undefined;
   countryCode: string | undefined;
-  targetType: number | undefined;
+  targetType: string | undefined;
 
   constructor(
     name?: string,
     canonicalName?: string,
     googleId?: string,
     countryCode?: string,
-    targetType?: number
+    targetType?: string
   ) {
     this.name = name;
     this.canonicalName = canonicalName;
