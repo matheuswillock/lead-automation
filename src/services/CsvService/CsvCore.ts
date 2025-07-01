@@ -1,6 +1,6 @@
 import OutputSearchLead, { Place } from "@/domain/Dto/OutputSearchLead";
 import { FormatPhoneNumber } from "../helpers/PhoneFormatter";
-import XLSX from "xlsx";
+import * as XLSX from "xlsx";
 
 export interface TableCsvRow {
   name: string;
@@ -18,7 +18,11 @@ export const GenerateCsvContent = (
   searchLeads: OutputSearchLead,
   lastPage?: number
 ) => {
+
+  console.log("Starting CSV generation...");
+
   if (!searchLeads || !searchLeads.places || searchLeads.places.length === 0) {
+    console.log("⛔️ Nenhum dado encontrado para gerar o CSV.");
     return;
   }
 
@@ -56,7 +60,21 @@ export const GenerateCsvContent = (
     XLSX.utils.book_append_sheet(wb, wsLastPage, 'LastPage');
   }
 
-  XLSX.writeFile(wb, excelFilename);
+  // XLSX.writeFile(wb, excelFilename);
+
+    // Gera o arquivo como blob
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([wbout], { type: "application/octet-stream" });
+  
+    // Cria o link para download
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = excelFilename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
 
   console.log(`✅ Excel '${excelFilename}' gerado com sucesso! (${table.length} contatos válidos)`);
 

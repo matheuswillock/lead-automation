@@ -22,22 +22,25 @@ import { SearchIcon } from "@/components/ui/search";
 import { FileCheck2Icon } from "@/components/ui/file-check-2";
 import { MapPinIcon } from "@/components/ui/map-pin";
 import { MapPinHouseIcon } from "@/components/ui/map-pin-house";
-import { MainProps } from "@/app/api/useCases/Main";
+import { MainProps } from "@/app/api/useCases/generateLeads";
 import { InputSerper } from "@/services/SerperService/Serper";
+import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
+import { Output } from "@/domain/Output";
 
 export default function Home() {
-  const [country, setCountry] = useState<string>("");
-  const [location, setLocation] = useState<string>("Cajamar, SP");
+  const [country, setCountry] = useState<string>("brazil");
+  const [countryCode, setCountryCode] = useState<string>("BR");
+  const [location, setLocation] = useState<string>("Sao Paulo");
   const [leadType, setLeadType] = useState<string>("Pizzaria");
   const [sendToWhatsApp, setSendToWhatsApp] = useState<boolean>(true);
   const [whatsappMessage, setWhatsappMessage] = useState<string>(
-    `Olá! Tudo bem? 😊\n\nAqui é o Cheffia — uma solução moderna para gestão de pedidos e pagamentos em pizzarias!\n\nVocê consegue automatizar pedidos, integrar pagamentos via QR Code e muito mais.\n\nGostaria de saber mais? É só responder aqui. 🚀`
+    `Olá! Tudo bem? 😊\n\nAqui é o Cheffia — uma solução moderna para gestão de pedidos e pagamentos em restaurantes!\n\nVocê consegue automatizar pedidos, integrar pagamentos via QR Code e muito mais.\n\nGostaria de saber mais? É só responder aqui. 🚀`
   );
 
   const input: InputSerper = {
     query: leadType,
     location: location,
-    country: country,
+    country: countryCode.toLocaleLowerCase(),
     language: "pt-br",
     page: 1,
   };
@@ -45,14 +48,14 @@ export default function Home() {
   const mainProps: MainProps = {
     input,
     lastPage: 5,
-    sendToWhatsApp,
-    message: whatsappMessage,
+    // sendToWhatsApp,
+    // message: whatsappMessage,
   };
 
   // const [leads, setLeads] = useState<Lead[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // Exemplo de chamada no seu componente React
+  // TODO: Implementar o handler que faz a requisição para gerar os leads em uma service
   const handleGenerateLeads = async () => {
     setIsLoading(true);
     try {
@@ -61,50 +64,34 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(mainProps),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erro ao gerar leads");
-      // Sucesso!
+      const data: Output | any = await res.json();
+      if ((!res.ok || !data.isValid)) {
+        console.error("Erro ao gerar leads:", data.error);
+      }
+      const {leads, lastPage} = data.result;
+      // TODO: Setar os leads na var
+      // TODO: chamar a service do csv
+
+      const csvResult = GenerateCsvContent(leads, lastPage);
+
+      if (!csvResult || !csvResult.filename || !csvResult.content) {
+        console.error('No valid data found to generate CSV.');
+        return;
+      }
+      const { filename, content } = csvResult;
+
+      console.log(`CSV generated successfully: ${filename}`);
+
+      console.log(`CSV generated successfully. Total pages searched: ${lastPage}`);
+      console.log(`Total pages processed: ${input.page}`);
+
+      // setLeads(data.leads || []);
     } catch (err) {
       // Trate o erro
     } finally {
       setIsLoading(false);
     }
   };
-
-  // TODO: Implementar a lógica de busca de leads usando o SerperService
-  useEffect(() => {}, []);
-
-
-  // TODO: Imeplementar método para baixar o CVS no CsvCore
-  // Função para baixar os leads como CSV
-  // const handleDownloadCsv = () => {
-  //   if (leads.length === 0) return;
-
-  //   const headers = [
-  //     "Nome do Estabelecimento",
-  //     "Endereço",
-  //     "Telefone",
-  //     "Website",
-  //   ];
-  //   const csvContent = [
-  //     headers.join(","),
-  //     ...leads.map((lead) =>
-  //       [lead.name, lead.address, lead.phone, lead.website].join(",")
-  //     ),
-  //   ].join("\n");
-
-  //   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  //   const link = document.createElement("a");
-  //   if (link.href) {
-  //     URL.revokeObjectURL(link.href);
-  //   }
-  //   const url = URL.createObjectURL(blob);
-  //   link.href = url;
-  //   link.setAttribute("download", "leads.csv");
-  //   document.body.appendChild(link);
-  //   link.click();
-  //   document.body.removeChild(link);
-  // };
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground font-sans p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12">
@@ -133,9 +120,10 @@ export default function Home() {
                   <Label>País</Label>
                   <LocationInput
                     placeholder="Ex: Brazil"
-                    onLocationSelect={(location) =>
-                      setCountry(location.canonicalName ?? "")
-                    }
+                    onLocationSelect={(location) => {
+                      setCountry(location.canonicalName ?? "");
+                      setCountryCode(location.countryCode ?? "");
+                    }}
                     initialValue={country}
                     filterType="Country"
                   />
@@ -144,10 +132,11 @@ export default function Home() {
                   <Label>Localização</Label>
                   <LocationInput
                     placeholder="Ex: Sao Paulo"
-                    onLocationSelect={(location) =>
-                      setCountry(location.canonicalName ?? "")
-                    }
-                    initialValue={country}
+                    onLocationSelect={(location) =>{
+                      setLocation(location.canonicalName ?? "");
+                      setCountryCode(location.countryCode ?? "")
+                    }}
+                    initialValue={location}
                     filterType="City"
                   />
                 </div>
@@ -175,7 +164,12 @@ export default function Home() {
                 </div>
                 <div className="space-y-2">
                   <Label>Mensagem</Label>
-                  <Textarea placeholder="Digite a mensagem que será enviada para os leads!" />
+                  <Textarea 
+                    placeholder="Digite a mensagem que será enviada para os leads!" 
+                    value={whatsappMessage}
+                    onChange={(e) => setWhatsappMessage(e.target.value)}
+                    className="resize-none h-32"
+                  />
                 </div>
               </CardContent>
               <CardFooter>

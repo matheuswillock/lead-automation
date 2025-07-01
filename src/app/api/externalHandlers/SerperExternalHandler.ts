@@ -10,7 +10,7 @@ const DEV_BASE_URL = process.env.SERPER_DEV_API_URL;
 const API_KEY = process.env.SERPER_API_KEY;
 
 export const SerperApi = {
-  search: async (query: InputSearchLead, apiKey?: string): Promise<Output> => {
+  places: async (query: InputSearchLead, apiKey?: string): Promise<Output> => {
     try {
 
       const key = apiKey ?? API_KEY;
@@ -18,13 +18,28 @@ export const SerperApi = {
         throw new Error("Invalid query or API key");
       }
 
-      const response = await axios.post(`${BASE_URL}/search`, query, {
+      if (!BASE_URL) {
+        throw new Error("Base URL is not configured");
+      }
+
+      console.log("url:", `${BASE_URL}`);
+      console.log("query:", query);
+      console.log("apiKey:", key);
+
+      const response = await axios.post(`${BASE_URL}`, query, {
         headers: {
           "X-API-KEY": key,
         },
       });
 
-      if (!response.data || !response.data.results || response.data.results.length === 0) {
+      if (!response || !response.data) {
+        console.warn("36 - SerperApi.search: No data in response");
+        return new Output(false, [], ["No results found"], null);
+      }
+      console.log("Response data:", response.data);
+
+      if (!response.data || !response.data.places || response.data.places.length === 0) {
+        console.warn("36 - SerperApi.search: No places found in response");
         return new Output(false, [], ["No results found"], null);
       }
 
@@ -35,6 +50,7 @@ export const SerperApi = {
       );
 
     } catch (error: any) {
+      const errorMessage = error.message || "Unknown error";
       console.error("Error in SerperApi.search:", error);
       if (error.response) {
         console.error("Error response data:", error.response.data);
@@ -45,7 +61,7 @@ export const SerperApi = {
       } else {
         console.error("Error message:", error.message);
       }
-      throw error;
+      return new Output(false, [], [errorMessage], null);
     }
   },
 
@@ -59,14 +75,10 @@ export const SerperApi = {
         },
       });
 
-      console.log("Response from Serper API:", response.data);
-
       if (!response.data || response.data.length === 0) {
         console.warn("No locations found");
         return OutputLocations.CreateOutput([]);
       }
-
-      console.log("Locations fetched successfully:", response.data);
       return OutputLocations.CreateOutput(response.data || []);
     } catch (error: any) {
       console.error("Error in SerperApi.getLocations:", error);

@@ -5,8 +5,6 @@ import { Output } from "@/domain/Output";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  // if (req.method !== "POST") return res.status(405).end();
-
   try {
     console.log("Received request to fetch locations");
     const input = await req.json();
@@ -28,8 +26,4 @@ export async function POST(req: NextRequest) {
     console.error(error);
     return NextResponse.json({ error: error.message || "Error fetching locations" }, { status: 500 });
   }
-}
-
-export async function GET(req: NextRequest) {
-  return NextResponse.json({ message: "API de locations está ativa. Use POST para buscar locais." });
 }
