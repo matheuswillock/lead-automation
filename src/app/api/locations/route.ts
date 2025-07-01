@@ -6,7 +6,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   try {
-    console.log("Received request to fetch locations");
     const input = await req.json();
 
     if (!input) {

@@ -22,10 +22,6 @@ export const SerperApi = {
         throw new Error("Base URL is not configured");
       }
 
-      console.log("url:", `${BASE_URL}`);
-      console.log("query:", query);
-      console.log("apiKey:", key);
-
       const response = await axios.post(`${BASE_URL}`, query, {
         headers: {
           "X-API-KEY": key,
@@ -36,7 +32,6 @@ export const SerperApi = {
         console.warn("36 - SerperApi.search: No data in response");
         return new Output(false, [], ["No results found"], null);
       }
-      console.log("Response data:", response.data);
 
       if (!response.data || !response.data.places || response.data.places.length === 0) {
         console.warn("36 - SerperApi.search: No places found in response");
@@ -67,7 +62,6 @@ export const SerperApi = {
 
   getLocations: async (input: InputLocations): Promise<Output> => {
     try {
-      console.log("url:", `${DEV_BASE_URL}/locations`);
       const response = await axios.get(`${DEV_BASE_URL}/locations`, {
         params: {
           q: input.query,

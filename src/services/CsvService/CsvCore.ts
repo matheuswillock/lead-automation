@@ -105,6 +105,58 @@ const GenerateRowCsvContent = (item: Place) => {
   };
 }
 
+const expectedColumns = [
+  "name",
+  "address",
+  "phone",
+  "whatsappLink",
+  "website",
+  "rating",
+  "priceRange",
+  "category",
+  "location",
+];
+
+
+// TODO: Implementar Upload e leitura dio CSV
+// const handleImportCsvClick = () => {
+//   fileInputRef.current?.click();
+// };
+
+// const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+//   const file = e.target.files?.[0];
+//   if (!file) return;
+
+//   const reader = new FileReader();
+//   reader.onload = (evt) => {
+//     const data = evt.target?.result;
+//     if (!data) return;
+//     const workbook = XLSX.read(data, { type: "binary" });
+//     const sheetName = workbook.SheetNames[0];
+//     const sheet = workbook.Sheets[sheetName];
+//     const json: any[] = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+//     // Validação das colunas
+//     const fileColumns = Object.keys(json[0] ?? {});
+//     const missing = expectedColumns.filter(col => !fileColumns.includes(col));
+//     const extra = fileColumns.filter(col => !expectedColumns.includes(col));
+
+//     if (missing.length > 0) {
+//       alert("Colunas faltando: " + missing.join(", "));
+//       return;
+//     }
+//     if (extra.length > 0) {
+//       alert("Colunas extras não reconhecidas: " + extra.join(", "));
+//       return;
+//     }
+
+//     alert("CSV importado com sucesso!");
+//     // Aqui você pode fazer o que quiser com os dados válidos
+//     // Exemplo: setSearchLeads({ ...searchLeads, places: json });
+//   };
+//   reader.readAsBinaryString(file);
+// };
+
 
 // TODO: Validar o uso da api Nominatim para geocodificação reversa
 // async function getAddressFromLatLng(lat: number, lng: number): Promise<string | null> {

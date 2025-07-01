@@ -13,8 +13,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Input and lastPage are required" }, { status: 400 });
     }
   
-    console.log("Request body:", { input, lastPage });
-
     const apiKey = process.env.SERPER_API_KEY;
 
     if (!apiKey) return NextResponse.json(

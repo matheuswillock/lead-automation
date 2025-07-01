@@ -49,14 +49,12 @@ export function LocationInput({
   };
 
   const handleSelectLocation = (locations: LocationData[]) => {
-    console.log("Selected locations:", locations);
     let filtered = locations;
 
     if (filterType === "Country") {
       filtered = locations.filter((location) => location.targetType === "Country");
     } else {
       filtered = locations.filter((location) => location.targetType !== "Country");
-      console.log("Filtered locations:", filtered);
     }
 
     const locationsToSelect = filtered.map((location) => ({
