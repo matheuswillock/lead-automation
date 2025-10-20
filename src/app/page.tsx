@@ -148,9 +148,24 @@ export default function Home() {
                   />
                 </div>
               </CardContent>
+              <CardFooter>
+                <Button
+                  variant="secondary"
+                  className="hover:cursor-pointer font-semibold hover:bg-primary/80 w-[100%]"
+                  onClick={async () => {
+                    // TODO: Implementar o handler que faz a requisição para gerar os leads
+                    await handleGenerateLeads();
+                  }}
+                  disabled={isGenerateDisabled || isLoading}
+                >
+                  <SearchIcon />
+                  Gerar Leads
+                </Button>
+              </CardFooter>
             </Card>
 
-            <Card>
+            {/* TODO: Implementar a configuração da mensagem */}
+            {/* <Card>
               <CardHeader className="flex items-center space-x-2">
                 <MessageCircleMoreIcon />
                 <CardTitle>Configure a Mensagem</CardTitle>
@@ -194,7 +209,7 @@ export default function Home() {
                   Gerar Leads
                 </Button>
               </CardFooter>
-            </Card>
+            </Card> */}
           </section>
 
           <section className="lg:col-span-3">

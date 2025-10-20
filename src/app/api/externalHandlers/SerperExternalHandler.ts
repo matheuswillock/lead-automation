@@ -62,10 +62,18 @@ export const SerperApi = {
 
   getLocations: async (input: InputLocations): Promise<Output> => {
     try {
-      const response = await axios.get(`${DEV_BASE_URL}/locations`, {
+
+      console.info("Fetching locations with input:", input);
+      
+      if (!DEV_BASE_URL) {
+        throw new Error("DEV Base URL is not configured");
+      }
+
+      // The locations endpoint does not require authentication
+      const response = await axios.get(`${DEV_BASE_URL}locations`, {
         params: {
-          q: input.query,
-          limit: input.limit,
+          q: input.query || "",
+          limit: input.limit || 25,
         },
       });
 

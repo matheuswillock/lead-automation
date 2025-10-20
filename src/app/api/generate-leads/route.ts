@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     if (!input || !lastPage) {
       return NextResponse.json({ error: "Input and lastPage are required" }, { status: 400 });
     }
-  
+
     const apiKey = process.env.SERPER_API_KEY;
 
     if (!apiKey) return NextResponse.json(
