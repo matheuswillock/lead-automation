@@ -19,7 +19,6 @@ export default function Hero()  {
               <motion.div
                 animate={{
                   scale: [1, 1.2, 1],
-                  opacity: [1, 0.8, 1],
                 }}
                 transition={{
                   duration: 2,
@@ -27,7 +26,7 @@ export default function Hero()  {
                   ease: "easeInOut",
                 }}
               >
-                <Zap className="w-4 h-4 text-primary fill-primary" />
+                <Zap className="w-4 h-4 text-[#FF5722]" />
               </motion.div>
               <span className="text-sm">
                 Extração global de leads • Qualquer país
