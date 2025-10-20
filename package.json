@@ -10,9 +10,12 @@
     "prisma:generate": "npx prisma generate",
     "prisma:studio": "npx prisma studio",
     "prisma:validate": "npx prisma validate",
-    "prisma:seed": "npx prisma db seed",
+    "prisma:seed": "tsx prisma/seed.ts",
     "prisma:migrate": "npx prisma migrate dev",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",
@@ -44,6 +47,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@prisma/client": "^6.17.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -52,10 +56,11 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.10",
-    "tw-animate-css": "^1.3.4",
-    "typescript": "^5",
     "prisma": "^6.16.3",
-    "prisma-erd-generator": "^2.0.4"
+    "prisma-erd-generator": "^2.0.4",
+    "tailwindcss": "^4.1.10",
+    "tsx": "^4.20.6",
+    "tw-animate-css": "^1.3.4",
+    "typescript": "^5"
   }
 }

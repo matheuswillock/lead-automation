@@ -16,13 +16,12 @@ datasource db {
 }
 
 model Profile {
-  id         String   @id @unique @default(uuid()) @db.Uuid
-  supabaseId String?  @unique @db.Uuid
-  username   String?  @unique @db.VarChar(30)
-  avatarUrl  String?  @db.Text
-  createdAt  DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt  DateTime @updatedAt @db.Timestamptz(6)
-
+  id           String        @id @unique @default(uuid()) @db.Uuid
+  supabaseId   String?       @unique @db.Uuid
+  username     String?       @unique @db.VarChar(30)
+  avatarUrl    String?
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime      @updatedAt @db.Timestamptz(6)
   subscription Subscription?
 
   @@map("profiles")
@@ -31,15 +30,14 @@ model Profile {
 model Subscription {
   id                 String           @id @unique @default(uuid()) @db.Uuid
   profileId          String           @unique @db.Uuid
-  profile            Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
   subscriptionPlanId String           @db.Uuid
-  plan               SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id], onDelete: Restrict)
   status             Boolean          @default(false)
   currentPeriodStart DateTime         @db.Timestamptz(6)
   currentPeriodEnd   DateTime         @db.Timestamptz(6)
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+  createdAt          DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime         @updatedAt @db.Timestamptz(6)
+  profile            Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  plan               SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
 
   @@index([profileId])
   @@index([subscriptionPlanId])
@@ -47,14 +45,12 @@ model Subscription {
 }
 
 model SubscriptionPlan {
-  id          String  @id @unique @default(uuid()) @db.Uuid
-  name        String  @unique @db.VarChar(50)
-  price       Decimal @db.Decimal(10, 2)
-  description String? @db.Text
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
+  id            String         @id @unique @default(uuid()) @db.Uuid
+  name          String         @unique @db.VarChar(50)
+  price         Decimal        @db.Decimal(10, 2)
+  description   String?
+  createdAt     DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @db.Timestamptz(6)
   subscriptions Subscription[]
 
   @@map("subscription_plans")

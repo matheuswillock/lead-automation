@@ -49,7 +49,7 @@ export default function Header() {
 
         <div className="flex items-center gap-4">
           <ModeToggle />
-          <Link href="/generate">
+          <Link href="/auth">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button className="cursor-pointer">Entrar</Button>
             </motion.div>

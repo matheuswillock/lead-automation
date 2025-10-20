@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef } from "react";
-import { BotMessageSquare, Loader, Search } from "lucide-react";
+import { BotMessageSquare, Loader, Search, AlertCircle, Crown, Clock } from "lucide-react";
 import { ModeToggle } from "@/components/ui/modeToggle";
 import { LocationInput } from "@/components/ui/LocationInput";
 import { MessageCircleMoreIcon } from "@/components/ui/message-circle-more";
@@ -30,8 +30,24 @@ import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
 import LeadsTable from "@/components/leads-table";
 import Link from "next/link";
 import { motion } from "motion/react";
+import { createClient } from "@/lib/supabase/client";
+import { useOnboarding } from "@/hooks/useOnboarding";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function Home() {
+  const supabase = createClient();
+  const [user, setUser] = useState<any>(null);
+  
+  // Hook de onboarding
+  const { 
+    data,
+    loading: onboardingLoading, 
+    error: onboardingError,
+    hasActiveSubscription,
+    isNewUser,
+    refreshProfile
+  } = useOnboarding(user);
+
   const [country, setCountry] = useState<string>("");
   const [countryCode, setCountryCode] = useState<string>("BR");
   const [location, setLocation] = useState<string>("");
@@ -46,13 +62,32 @@ export default function Home() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Verificar autenticação
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+    
+    checkAuth();
+
+    // Escutar mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
   const isGenerateDisabled =
   !country ||
   !location ||
   !leadType ||
   country.trim().length <= 3 ||
   location.trim().length <= 3 ||
-  leadType.trim().length <= 3;
+  leadType.trim().length <= 3 ||
+  !hasActiveSubscription ||
+  onboardingLoading;
 
   const input: InputSerper = {
     query: leadType,
@@ -68,6 +103,11 @@ export default function Home() {
   };
 
   const handleGenerateLeads = async () => {
+    // Verificar se tem assinatura ativa
+    if (!hasActiveSubscription) {
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await fetch("/api/generate-leads", {
@@ -122,6 +162,108 @@ export default function Home() {
       {/* Conteúdo Principal */}
       <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
+          {/* Alertas de Status */}
+          {onboardingLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Alert>
+                <Loader className="h-4 w-4 animate-spin" />
+                <AlertTitle>Carregando...</AlertTitle>
+                <AlertDescription>
+                  Verificando status da sua assinatura
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+
+          {onboardingError && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Erro</AlertTitle>
+                <AlertDescription>{onboardingError}</AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+
+          {!user && !onboardingLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Alert>
+                <AlertCircle className="h-4 w-4" />
+                <AlertTitle>Faça login para continuar</AlertTitle>
+                <AlertDescription>
+                  Você precisa estar autenticado para gerar leads.
+                  <Link href="/" className="ml-2 underline font-medium">
+                    Voltar para a página inicial
+                  </Link>
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+
+          {user && !hasActiveSubscription && !onboardingLoading && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Alert variant="destructive">
+                <Crown className="h-4 w-4" />
+                <AlertTitle>Assinatura expirada ou inativa</AlertTitle>
+                <AlertDescription className="flex items-center justify-between">
+                  <span>Sua assinatura não está ativa. Renove para continuar gerando leads por apenas R$ 19,90/mês.</span>
+                  <Button variant="default" size="sm" className="ml-4" asChild>
+                    <Link href="#pricing">Renovar agora</Link>
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+
+          {user && hasActiveSubscription && data?.subscription && isNewUser && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Alert className="border-primary">
+                <Crown className="h-4 w-4 text-primary" />
+                <AlertTitle>Período de teste ativado!</AlertTitle>
+                <AlertDescription>
+                  Você tem 7 dias de teste grátis. Aproveite para explorar todas as funcionalidades!
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+
+          {user && hasActiveSubscription && data?.subscription && !isNewUser && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6"
+            >
+              <Alert className="border-green-500">
+                <Crown className="h-4 w-4 text-green-500" />
+                <AlertTitle>Assinatura ativa</AlertTitle>
+                <AlertDescription>
+                  Sua assinatura Professional está ativa até{' '}
+                  {new Date(data.subscription.endsAt).toLocaleDateString('pt-BR')}
+                </AlertDescription>
+              </Alert>
+            </motion.div>
+          )}
+
           {/* Título da Página */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -186,8 +328,8 @@ export default function Home() {
                 </CardContent>
                 <CardFooter>
                   <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    whileHover={{ scale: hasActiveSubscription ? 1.02 : 1 }}
+                    whileTap={{ scale: hasActiveSubscription ? 0.98 : 1 }}
                     className="w-full"
                   >
                     <Button
@@ -197,8 +339,22 @@ export default function Home() {
                       }}
                       disabled={isGenerateDisabled || isLoading}
                     >
-                      <SearchIcon />
-                      Gerar Leads
+                      {onboardingLoading ? (
+                        <>
+                          <Loader className="animate-spin" />
+                          Verificando assinatura...
+                        </>
+                      ) : !hasActiveSubscription ? (
+                        <>
+                          <Crown />
+                          Assinatura necessária
+                        </>
+                      ) : (
+                        <>
+                          <SearchIcon />
+                          Gerar Leads
+                        </>
+                      )}
                     </Button>
                   </motion.div>
                 </CardFooter>
