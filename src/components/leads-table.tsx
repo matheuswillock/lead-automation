@@ -1,9 +1,7 @@
 import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
 
 export default function LeadsTable({ leads }: { leads: OutputSearchLead }) {
-  console.log("Leads", leads);
   if (!leads || !leads.places || leads.places.length === 0) {
-    console.log("Nenhum lead encontrado.");
     return <div className="text-muted-foreground">Nenhum lead encontrado.</div>;
   }
 

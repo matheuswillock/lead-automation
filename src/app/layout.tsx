@@ -1,8 +1,8 @@
-import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import "../app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";
+import { Metadata } from "next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Automation leads App",
-  description: "A Next.js application for automating lead generation",
+  title: "Lead Generator - Extração de Leads Global",
+  description: "Plataforma profissional para geração e extração de leads de qualquer país, estado e cidade. Rápido, consistente e eficiente.",
 };
 
 export default function RootLayout({
