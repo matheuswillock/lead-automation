@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ModeToggle } from "@/components/ui/modeToggle";
-import { Search, MapPin, Users, CheckCircle2, ArrowRight, Download } from "lucide-react";
+import { Search, MapPin, Users, CheckCircle2, ArrowRight, Download, MessageCircle, Zap } from "lucide-react";
 import Link from "next/link";
 import { motion } from "motion/react";
 
@@ -27,7 +27,7 @@ export default function LandingPage() {
             </div>
             <span className="text-xl font-bold">Lead Generator</span>
           </motion.div>
-          
+
           <div className="hidden md:flex items-center gap-8">
             <motion.a
               whileHover={{ scale: 1.1 }}
@@ -55,7 +55,10 @@ export default function LandingPage() {
           <div className="flex items-center gap-4">
             <ModeToggle />
             <Link href="/generate">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
                 <Button>Entrar</Button>
               </motion.div>
             </Link>
@@ -85,11 +88,13 @@ export default function LandingPage() {
                     ease: "easeInOut",
                   }}
                 >
-                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <Zap className="w-4 h-4 text-primary fill-primary" />
                 </motion.div>
-                <span className="text-sm">Extração global de leads • Qualquer país</span>
+                <span className="text-sm">
+                  Extração global de leads • Qualquer país
+                </span>
               </motion.div>
-              
+
               <motion.h1
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -99,16 +104,17 @@ export default function LandingPage() {
                 Extraia leads qualificados de{" "}
                 <span className="text-primary">qualquer lugar do mundo</span>
               </motion.h1>
-              
+
               <motion.p
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-lg text-muted-foreground"
               >
-                Plataforma completa para geração e extração de leads de forma rápida e consistente. 
-                Busque empresas em qualquer país, estado e cidade, e gere listas completas 
-                com dados de contato verificados.
+                Plataforma completa para geração e extração de leads de forma
+                rápida e consistente. Busque empresas em qualquer país, estado e
+                cidade, e gere listas completas com dados de contato
+                verificados.
               </motion.p>
 
               <motion.div
@@ -118,7 +124,10 @@ export default function LandingPage() {
                 className="flex flex-col sm:flex-row gap-4"
               >
                 <Link href="/generate" className="w-full sm:w-auto">
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     <Button size="lg" className="w-full">
                       Começar Agora
                       <ArrowRight className="ml-2 w-4 h-4" />
@@ -135,15 +144,21 @@ export default function LandingPage() {
               >
                 <motion.div whileHover={{ scale: 1.1 }}>
                   <div className="text-3xl font-bold text-primary">10k+</div>
-                  <div className="text-sm text-muted-foreground">Leads gerados</div>
+                  <div className="text-sm text-muted-foreground">
+                    Leads gerados
+                  </div>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.1 }}>
                   <div className="text-3xl font-bold text-primary">500+</div>
-                  <div className="text-sm text-muted-foreground">Empresas ativas</div>
+                  <div className="text-sm text-muted-foreground">
+                    Empresas ativas
+                  </div>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.1 }}>
                   <div className="text-3xl font-bold text-primary">98%</div>
-                  <div className="text-sm text-muted-foreground">Satisfação</div>
+                  <div className="text-sm text-muted-foreground">
+                    Satisfação
+                  </div>
                 </motion.div>
               </motion.div>
             </div>
@@ -178,11 +193,13 @@ export default function LandingPage() {
                     <MapPin className="w-8 h-8 text-primary" />
                     <div className="flex-1">
                       <div className="font-semibold">Busca por Localização</div>
-                      <div className="text-sm text-muted-foreground">São Paulo, Brasil</div>
+                      <div className="text-sm text-muted-foreground">
+                        São Paulo, Brasil
+                      </div>
                     </div>
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   </motion.div>
-                  
+
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -193,11 +210,13 @@ export default function LandingPage() {
                     <Search className="w-8 h-8 text-primary" />
                     <div className="flex-1">
                       <div className="font-semibold">Tipo de Negócio</div>
-                      <div className="text-sm text-muted-foreground">Restaurantes, Cafés</div>
+                      <div className="text-sm text-muted-foreground">
+                        Restaurantes, Cafés
+                      </div>
                     </div>
                     <CheckCircle2 className="w-5 h-5 text-green-500" />
                   </motion.div>
-                  
+
                   <motion.div
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
@@ -208,7 +227,9 @@ export default function LandingPage() {
                     <Download className="w-8 h-8 text-primary" />
                     <div className="flex-1">
                       <div className="font-semibold">Exportar Dados</div>
-                      <div className="text-sm text-muted-foreground">150 leads encontrados</div>
+                      <div className="text-sm text-muted-foreground">
+                        150 leads encontrados
+                      </div>
                     </div>
                     <motion.div
                       animate={{ scale: [1, 1.2, 1] }}
@@ -236,10 +257,12 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Recursos <span className="text-primary">poderosos</span> para sua equipe
+              Recursos <span className="text-primary">poderosos</span> para sua
+              equipe
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Ferramentas essenciais para extração e gestão de leads em escala global.
+              Ferramentas essenciais para extração e gestão de leads em escala
+              global.
             </p>
           </motion.div>
 
@@ -255,9 +278,12 @@ export default function LandingPage() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Search className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Busca Inteligente</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Busca Inteligente
+                </h3>
                 <p className="text-muted-foreground">
-                  Extraia leads com precisão usando filtros avançados de localização e segmento de negócio.
+                  Extraia leads com precisão usando filtros avançados de
+                  localização e segmento de negócio.
                 </p>
               </Card>
             </motion.div>
@@ -273,9 +299,12 @@ export default function LandingPage() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <MapPin className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Geolocalização Global</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Geolocalização Global
+                </h3>
                 <p className="text-muted-foreground">
-                  Extraia leads de qualquer país, estado e cidade do mundo com precisão absoluta.
+                  Extraia leads de qualquer país, estado e cidade do mundo com
+                  precisão absoluta.
                 </p>
               </Card>
             </motion.div>
@@ -291,9 +320,12 @@ export default function LandingPage() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Dados Verificados</h3>
+                <h3 className="text-xl font-semibold mb-2">
+                  Dados Verificados
+                </h3>
                 <p className="text-muted-foreground">
-                  Informações atualizadas com telefone, endereço e horários de funcionamento.
+                  Informações atualizadas com telefone, endereço e horários de
+                  funcionamento.
                 </p>
               </Card>
             </motion.div>
@@ -311,7 +343,8 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Exportação Fácil</h3>
                 <p className="text-muted-foreground">
-                  Exporte seus leads em CSV ou Excel com um clique para usar em qualquer CRM.
+                  Exporte seus leads em CSV ou Excel com um clique para usar em
+                  qualquer CRM.
                 </p>
               </Card>
             </motion.div>
@@ -330,10 +363,12 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Como funciona o <span className="text-primary">Lead Generator</span>
+              Como funciona o{" "}
+              <span className="text-primary">Lead Generator</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Um processo simples e rápido para extrair leads qualificados de qualquer lugar.
+              Um processo simples e rápido para extrair leads qualificados de
+              qualquer lugar.
             </p>
           </motion.div>
 
@@ -342,22 +377,26 @@ export default function LandingPage() {
               {
                 number: 1,
                 title: "Defina sua Busca",
-                description: "Escolha o país, estado, cidade e tipo de negócio que você quer extrair.",
+                description:
+                  "Escolha o país, estado, cidade e tipo de negócio que você quer extrair.",
               },
               {
                 number: 2,
                 title: "Extraia os Leads",
-                description: "Nossa plataforma gera e extrai milhares de leads de forma rápida e consistente.",
+                description:
+                  "Nossa plataforma gera e extrai milhares de leads de forma rápida e consistente.",
               },
               {
                 number: 3,
                 title: "Revise os Dados",
-                description: "Visualize e filtre os leads extraídos com todas as informações verificadas.",
+                description:
+                  "Visualize e filtre os leads extraídos com todas as informações verificadas.",
               },
               {
                 number: 4,
                 title: "Exporte e Use",
-                description: "Baixe sua lista e comece a prospectar com dados atualizados do mundo todo.",
+                description:
+                  "Baixe sua lista e comece a prospectar com dados atualizados do mundo todo.",
               },
             ].map((step, index) => (
               <motion.div
@@ -395,10 +434,12 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Preços <span className="text-primary">simples</span> e transparentes
+              Preços <span className="text-primary">simples</span> e
+              transparentes
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Apenas R$ 19,90/mês para extração ilimitada de leads em todo o mundo.
+              Apenas R$ 19,90/mês para extração ilimitada de leads em todo o
+              mundo.
             </p>
           </motion.div>
 
@@ -409,7 +450,10 @@ export default function LandingPage() {
             transition={{ duration: 0.6 }}
             className="max-w-3xl mx-auto"
           >
-            <motion.div whileHover={{ scale: 1.02 }} transition={{ type: "spring" }}>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring" }}
+            >
               <Card className="p-8 md:p-12 border-2 border-primary">
                 <div className="text-center mb-8">
                   <motion.div
@@ -425,11 +469,13 @@ export default function LandingPage() {
                   >
                     Plano Único
                   </motion.div>
-                  <h3 className="text-3xl font-bold mb-4">Lead Generator Professional</h3>
+                  <h3 className="text-3xl font-bold mb-4">
+                    Lead Generator Professional
+                  </h3>
                   <p className="text-muted-foreground mb-6">
                     Extração e geração de leads rápida e consistente
                   </p>
-                  
+
                   <motion.div
                     initial={{ scale: 0.8 }}
                     whileInView={{ scale: 1 }}
@@ -447,10 +493,10 @@ export default function LandingPage() {
                 <div className="grid md:grid-cols-2 gap-6 mb-8">
                   <div className="space-y-4">
                     {[
-                      "Leads ilimitados",
-                      "Dashboard com analytics",
-                      "Gestão de operadores",
-                      "Suporte via email",
+                      "Busca inteligente com filtros avançados",
+                      "Geolocalização global (qualquer país)",
+                      "Dados verificados e atualizados",
+                      "Exportação fácil em CSV/Excel",
                     ].map((feature, index) => (
                       <motion.div
                         key={index}
@@ -467,10 +513,10 @@ export default function LandingPage() {
                   </div>
                   <div className="space-y-4">
                     {[
-                      "Pipeline Kanban completo",
-                      "Automações inteligentes",
-                      "Relatórios personalizados",
-                      "Atualizações automáticas",
+                      "Extração ilimitada de leads",
+                      "Telefone e endereço completo",
+                      "Horários de funcionamento",
+                      "Suporte via email",
                     ].map((feature, index) => (
                       <motion.div
                         key={index}
@@ -487,7 +533,10 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
                   <Link href="/generate">
                     <Button size="lg" className="w-full">
                       Começar Agora
@@ -508,47 +557,38 @@ export default function LandingPage() {
       {/* Footer */}
       <footer className="border-t py-12 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                  <Search className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <span className="text-xl font-bold">Lead Generator</span>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <Search className="w-6 h-6 text-primary-foreground" />
               </div>
-              <p className="text-muted-foreground mb-4">
-                Plataforma profissional para extração e geração de leads em qualquer lugar do mundo.
+              <span className="text-xl font-bold">Lead Generator</span>
+            </div>
+            <p className="text-muted-foreground mb-6">
+              Plataforma profissional para extração e geração de leads em
+              qualquer lugar do mundo.
+            </p>
+
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-muted-foreground">
+              <p>© 2025 Lead Generator. Todos os direitos reservados.</p>
+              <p>
+                Desenvolvido com 🧡 por{" "}
+                <motion.a
+                  whileHover={{ scale: 1.05 }}
+                  href="https://github.com/matheuswillock"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline font-semibold"
+                >
+                  Willock's House
+                </motion.a>
               </p>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>© 2025 Lead Generator. Todos os direitos reservados.</span>
-              </div>
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-right"
-            >
-              <p className="text-sm text-muted-foreground mb-2">
-                Desenvolvido com 🧡 por
-              </p>
-              <motion.a
-                whileHover={{ scale: 1.05 }}
-                href="https://github.com/matheuswillock" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline font-semibold text-lg"
-              >
-                Willock's House
-              </motion.a>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </footer>
     </div>
