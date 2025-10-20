@@ -1,6 +1,13 @@
 ```mermaid
 erDiagram
 
+        SubscriptionStatus {
+            PENDING PENDING
+ACTIVE ACTIVE
+CANCELLED CANCELLED
+EXPIRED EXPIRED
+        }
+    
   "profiles" {
     String id "🗝️"
     String supabaseId "❓"
@@ -13,7 +20,7 @@ erDiagram
 
   "subscriptions" {
     String id "🗝️"
-    Boolean status 
+    SubscriptionStatus status 
     DateTime currentPeriodStart 
     DateTime currentPeriodEnd 
     DateTime createdAt 
@@ -31,6 +38,7 @@ erDiagram
     }
   
     "profiles" o{--}o "subscriptions" : ""
+    "subscriptions" o|--|| "SubscriptionStatus" : "enum:status"
     "subscriptions" o|--|| "profiles" : "profile"
     "subscriptions" o|--|| "subscription_plans" : "plan"
 ```

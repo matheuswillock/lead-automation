@@ -27,17 +27,24 @@ model Profile {
   @@map("profiles")
 }
 
+enum SubscriptionStatus {
+  PENDING // Aguardando pagamento
+  ACTIVE // Assinatura ativa
+  CANCELLED // Assinatura cancelada
+  EXPIRED // Assinatura expirada
+}
+
 model Subscription {
-  id                 String           @id @unique @default(uuid()) @db.Uuid
-  profileId          String           @unique @db.Uuid
-  subscriptionPlanId String           @db.Uuid
-  status             Boolean          @default(false)
-  currentPeriodStart DateTime         @db.Timestamptz(6)
-  currentPeriodEnd   DateTime         @db.Timestamptz(6)
-  createdAt          DateTime         @default(now()) @db.Timestamptz(6)
-  updatedAt          DateTime         @updatedAt @db.Timestamptz(6)
-  profile            Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
-  plan               SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+  id                 String             @id @unique @default(uuid()) @db.Uuid
+  profileId          String             @unique @db.Uuid
+  subscriptionPlanId String             @db.Uuid
+  status             SubscriptionStatus @default(PENDING)
+  currentPeriodStart DateTime           @db.Timestamptz(6)
+  currentPeriodEnd   DateTime           @db.Timestamptz(6)
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
+  profile            Profile            @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  plan               SubscriptionPlan   @relation(fields: [subscriptionPlanId], references: [id])
 
   @@index([profileId])
   @@index([subscriptionPlanId])

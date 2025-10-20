@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, SubscriptionStatus } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -7,30 +7,10 @@ export interface CreateSubscriptionInput {
   subscriptionPlanId: string
   currentPeriodStart: Date
   currentPeriodEnd: Date
+  status?: SubscriptionStatus
 }
 
 export class SubscriptionService {
-  /**
-   * Cria uma nova assinatura para um perfil
-   */
-  static async createSubscription(input: CreateSubscriptionInput) {
-    const subscription = await prisma.subscription.create({
-      data: {
-        profileId: input.profileId,
-        subscriptionPlanId: input.subscriptionPlanId,
-        status: true,
-        currentPeriodStart: input.currentPeriodStart,
-        currentPeriodEnd: input.currentPeriodEnd,
-      },
-      include: {
-        plan: true,
-        profile: true,
-      },
-    })
-
-    return subscription
-  }
-
   /**
    * Busca o plano Professional (único plano disponível)
    */
@@ -47,27 +27,37 @@ export class SubscriptionService {
   }
 
   /**
-   * Ativa trial de 7 dias para novo usuário
+   * Cria uma assinatura PENDING aguardando pagamento
+   * Usada quando usuário se cadastra mas ainda não pagou
    */
-  static async createTrialSubscription(profileId: string) {
+  static async createPendingSubscription(profileId: string) {
     const plan = await this.getProfessionalPlan()
     
     const now = new Date()
-    const trialEnd = new Date()
-    trialEnd.setDate(trialEnd.getDate() + 7) // 7 dias de trial
+    const periodEnd = new Date()
+    periodEnd.setDate(periodEnd.getDate() + 30) // 30 dias após pagamento
 
-    return this.createSubscription({
-      profileId,
-      subscriptionPlanId: plan.id,
-      currentPeriodStart: now,
-      currentPeriodEnd: trialEnd,
+    const subscription = await prisma.subscription.create({
+      data: {
+        profileId,
+        subscriptionPlanId: plan.id,
+        status: 'PENDING',
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
     })
+
+    return subscription
   }
 
   /**
-   * Ativa assinatura paga (30 dias)
+   * Ativa assinatura após confirmação de pagamento
    */
-  static async activatePaidSubscription(profileId: string) {
+  static async activateSubscription(profileId: string) {
     const plan = await this.getProfessionalPlan()
     
     const now = new Date()
@@ -84,7 +74,7 @@ export class SubscriptionService {
       return prisma.subscription.update({
         where: { profileId },
         data: {
-          status: true,
+          status: 'ACTIVE',
           currentPeriodStart: now,
           currentPeriodEnd: periodEnd,
         },
@@ -95,12 +85,19 @@ export class SubscriptionService {
       })
     }
 
-    // Criar nova subscription
-    return this.createSubscription({
-      profileId,
-      subscriptionPlanId: plan.id,
-      currentPeriodStart: now,
-      currentPeriodEnd: periodEnd,
+    // Criar nova subscription ativa
+    return prisma.subscription.create({
+      data: {
+        profileId,
+        subscriptionPlanId: plan.id,
+        status: 'ACTIVE',
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
     })
   }
 
@@ -113,10 +110,23 @@ export class SubscriptionService {
     })
 
     if (!subscription) return false
-    if (!subscription.status) return false
+    if (subscription.status !== 'ACTIVE') return false
 
     const now = new Date()
     return subscription.currentPeriodEnd > now
+  }
+
+  /**
+   * Busca subscription por profileId
+   */
+  static async getSubscriptionByProfileId(profileId: string) {
+    return prisma.subscription.findUnique({
+      where: { profileId },
+      include: {
+        plan: true,
+        profile: true,
+      },
+    })
   }
 
   /**
@@ -126,7 +136,51 @@ export class SubscriptionService {
     return prisma.subscription.update({
       where: { profileId },
       data: {
-        status: false,
+        status: 'CANCELLED',
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
+    })
+  }
+
+  /**
+   * Marca assinatura como expirada
+   */
+  static async expireSubscription(profileId: string) {
+    return prisma.subscription.update({
+      where: { profileId },
+      data: {
+        status: 'EXPIRED',
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
+    })
+  }
+
+  /**
+   * Renova assinatura (adiciona 30 dias)
+   */
+  static async renewSubscription(profileId: string) {
+    const existing = await prisma.subscription.findUnique({
+      where: { profileId },
+    })
+
+    if (!existing) {
+      throw new Error('Assinatura não encontrada')
+    }
+
+    const newEnd = new Date(existing.currentPeriodEnd)
+    newEnd.setDate(newEnd.getDate() + 30)
+
+    return prisma.subscription.update({
+      where: { profileId },
+      data: {
+        status: 'ACTIVE',
+        currentPeriodEnd: newEnd,
       },
       include: {
         plan: true,

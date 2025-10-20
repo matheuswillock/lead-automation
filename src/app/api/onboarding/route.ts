@@ -32,8 +32,8 @@ export async function POST(request: NextRequest) {
       avatarUrl,
     })
 
-    // Criar trial de 7 dias
-    const subscription = await SubscriptionService.createTrialSubscription(profile.id)
+    // Criar assinatura PENDING (aguardando pagamento)
+    const subscription = await SubscriptionService.createPendingSubscription(profile.id)
 
     // Buscar perfil com subscription atualizada
     const updatedProfile = await ProfileService.getProfileById(profile.id)
@@ -42,7 +42,8 @@ export async function POST(request: NextRequest) {
       profile: updatedProfile,
       subscription,
       isNew: true,
-      message: 'Usuário criado com sucesso! Trial de 7 dias ativado.',
+      needsPayment: true,
+      message: 'Usuário criado com sucesso! Complete o pagamento para ativar sua assinatura.',
     }, { status: 201 })
 
   } catch (error: any) {

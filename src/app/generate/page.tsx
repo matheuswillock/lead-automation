@@ -33,8 +33,10 @@ import { motion } from "motion/react";
 import { createClient } from "@/lib/supabase/client";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
   const supabase = createClient();
   const [user, setUser] = useState<any>(null);
   
@@ -47,6 +49,13 @@ export default function Home() {
     isNewUser,
     refreshProfile
   } = useOnboarding(user);
+
+  // Redirecionar para checkout se subscription está PENDING
+  useEffect(() => {
+    if (data?.subscription && data.subscription.status === 'PENDING') {
+      router.push('/checkout');
+    }
+  }, [data, router]);
 
   const [country, setCountry] = useState<string>("");
   const [countryCode, setCountryCode] = useState<string>("BR");
