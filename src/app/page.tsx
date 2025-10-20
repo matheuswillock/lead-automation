@@ -25,7 +25,7 @@ export default function LandingPage() {
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <Search className="w-6 h-6 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold">Lead Flow</span>
+            <span className="text-xl font-bold">Lead Generator</span>
           </motion.div>
           
           <div className="hidden md:flex items-center gap-8">
@@ -87,7 +87,7 @@ export default function LandingPage() {
                 >
                   <div className="w-2 h-2 rounded-full bg-primary" />
                 </motion.div>
-                <span className="text-sm">Geração de leads automatizada</span>
+                <span className="text-sm">Extração global de leads • Qualquer país</span>
               </motion.div>
               
               <motion.h1
@@ -96,8 +96,8 @@ export default function LandingPage() {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
               >
-                Encontre leads qualificados em{" "}
-                <span className="text-primary">segundos</span>
+                Extraia leads qualificados de{" "}
+                <span className="text-primary">qualquer lugar do mundo</span>
               </motion.h1>
               
               <motion.p
@@ -106,8 +106,8 @@ export default function LandingPage() {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-lg text-muted-foreground"
               >
-                Automatize sua prospecção com nossa plataforma inteligente. 
-                Busque empresas por localização, segmento e gere listas completas 
+                Plataforma completa para geração e extração de leads de forma rápida e consistente. 
+                Busque empresas em qualquer país, estado e cidade, e gere listas completas 
                 com dados de contato verificados.
               </motion.p>
 
@@ -239,7 +239,7 @@ export default function LandingPage() {
               Recursos <span className="text-primary">poderosos</span> para sua equipe
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Tudo que você precisa para encontrar, gerenciar e converter leads em clientes.
+              Ferramentas essenciais para extração e gestão de leads em escala global.
             </p>
           </motion.div>
 
@@ -257,7 +257,7 @@ export default function LandingPage() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Busca Inteligente</h3>
                 <p className="text-muted-foreground">
-                  Encontre empresas por localização, tipo de negócio e outros critérios personalizados.
+                  Extraia leads com precisão usando filtros avançados de localização e segmento de negócio.
                 </p>
               </Card>
             </motion.div>
@@ -273,9 +273,9 @@ export default function LandingPage() {
                 <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                   <MapPin className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Geolocalização</h3>
+                <h3 className="text-xl font-semibold mb-2">Geolocalização Global</h3>
                 <p className="text-muted-foreground">
-                  Busque leads em qualquer país e cidade do mundo com precisão.
+                  Extraia leads de qualquer país, estado e cidade do mundo com precisão absoluta.
                 </p>
               </Card>
             </motion.div>
@@ -330,10 +330,10 @@ export default function LandingPage() {
             className="text-center mb-16"
           >
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Como funciona o <span className="text-primary">Lead Flow</span>
+              Como funciona o <span className="text-primary">Lead Generator</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Um processo simples e direto para transformar buscas em leads qualificados.
+              Um processo simples e rápido para extrair leads qualificados de qualquer lugar.
             </p>
           </motion.div>
 
@@ -341,23 +341,23 @@ export default function LandingPage() {
             {[
               {
                 number: 1,
-                title: "Defina o Alvo",
-                description: "Escolha a localização e o tipo de negócio que você quer prospectar.",
+                title: "Defina sua Busca",
+                description: "Escolha o país, estado, cidade e tipo de negócio que você quer extrair.",
               },
               {
                 number: 2,
-                title: "Busque Leads",
-                description: "Nossa IA busca e organiza milhares de leads qualificados automaticamente.",
+                title: "Extraia os Leads",
+                description: "Nossa plataforma gera e extrai milhares de leads de forma rápida e consistente.",
               },
               {
                 number: 3,
                 title: "Revise os Dados",
-                description: "Visualize e filtre os leads encontrados com todas as informações relevantes.",
+                description: "Visualize e filtre os leads extraídos com todas as informações verificadas.",
               },
               {
                 number: 4,
-                title: "Exporte e Venda",
-                description: "Baixe sua lista e comece a prospectar com dados atualizados e verificados.",
+                title: "Exporte e Use",
+                description: "Baixe sua lista e comece a prospectar com dados atualizados do mundo todo.",
               },
             ].map((step, index) => (
               <motion.div
@@ -398,7 +398,7 @@ export default function LandingPage() {
               Preços <span className="text-primary">simples</span> e transparentes
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Comece gratuitamente. Pague apenas pelo que usar, sem surpresas.
+              Apenas R$ 19,90/mês para extração ilimitada de leads em todo o mundo.
             </p>
           </motion.div>
 
@@ -425,9 +425,9 @@ export default function LandingPage() {
                   >
                     Plano Único
                   </motion.div>
-                  <h3 className="text-3xl font-bold mb-4">Lead Flow Professional</h3>
+                  <h3 className="text-3xl font-bold mb-4">Lead Generator Professional</h3>
                   <p className="text-muted-foreground mb-6">
-                    Tudo que você precisa para automatizar sua prospecção
+                    Extração e geração de leads rápida e consistente
                   </p>
                   
                   <motion.div
@@ -518,13 +518,13 @@ export default function LandingPage() {
                 <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                   <Search className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <span className="text-xl font-bold">Lead Flow</span>
+                <span className="text-xl font-bold">Lead Generator</span>
               </div>
               <p className="text-muted-foreground mb-4">
-                Plataforma de automação de prospecção e gestão de leads para equipes de vendas modernas.
+                Plataforma profissional para extração e geração de leads em qualquer lugar do mundo.
               </p>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>© 2025 Lead Flow. Todos os direitos reservados.</span>
+                <span>© 2025 Lead Generator. Todos os direitos reservados.</span>
               </div>
             </motion.div>
             

@@ -17,8 +17,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Automation leads App",
-  description: "A Next.js application for automating lead generation",
+  title: "Lead Generator - Extração de Leads Global",
+  description: "Plataforma profissional para geração e extração de leads de qualquer país, estado e cidade. Rápido, consistente e eficiente.",
 };
 
 export default function RootLayout({
