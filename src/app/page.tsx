@@ -59,7 +59,7 @@ export default function LandingPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button>Entrar</Button>
+                <Button className="cursor-pointer">Entrar</Button>
               </motion.div>
             </Link>
           </div>
@@ -128,7 +128,7 @@ export default function LandingPage() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Button size="lg" className="w-full">
+                    <Button size="lg" className="w-full cursor-pointer">
                       Começar Agora
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
@@ -538,7 +538,7 @@ export default function LandingPage() {
                   whileTap={{ scale: 0.98 }}
                 >
                   <Link href="/generate">
-                    <Button size="lg" className="w-full">
+                    <Button size="lg" className="w-full cursor-pointer">
                       Começar Agora
                       <ArrowRight className="ml-2 w-4 h-4" />
                     </Button>
