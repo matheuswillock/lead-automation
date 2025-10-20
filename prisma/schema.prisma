@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+  runtime  = "bun"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./erd/diagram.md"
+  format   = "mermaid"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id         String   @id @unique @default(uuid()) @db.Uuid
+  supabaseId String?  @unique @db.Uuid
+  username   String?  @unique @db.VarChar(30)
+  avatarUrl  String?  @db.Text
+  createdAt  DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(6)
+
+  subscription Subscription?
+
+  @@map("profiles")
+}
+
+model Subscription {
+  id                 String           @id @unique @default(uuid()) @db.Uuid
+  profileId          String           @unique @db.Uuid
+  profile            Profile          @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  subscriptionPlanId String           @db.Uuid
+  plan               SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id], onDelete: Restrict)
+  status             Boolean          @default(false)
+  currentPeriodStart DateTime         @db.Timestamptz(6)
+  currentPeriodEnd   DateTime         @db.Timestamptz(6)
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([profileId])
+  @@index([subscriptionPlanId])
+  @@map("subscriptions")
+}
+
+model SubscriptionPlan {
+  id          String  @id @unique @default(uuid()) @db.Uuid
+  name        String  @unique @db.VarChar(50)
+  price       Decimal @db.Decimal(10, 2)
+  description String? @db.Text
+
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}

@@ -6,17 +6,23 @@
     "build": "next build",
     "start": "next start",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "prisma:generate": "npx prisma generate",
+    "prisma:studio": "npx prisma studio",
+    "prisma:validate": "npx prisma validate",
+    "prisma:seed": "npx prisma db seed",
+    "prisma:migrate": "npx prisma migrate dev",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.7.0",
-    "@supabase/supabase-js": "^2.57.2",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-label": "^2.1.7",
     "@radix-ui/react-popover": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.5",
+    "@supabase/ssr": "^0.7.0",
+    "@supabase/supabase-js": "^2.57.2",
     "@vercel/analytics": "^1.5.0",
     "axios": "^1.10.0",
     "class-variance-authority": "^0.7.1",
@@ -33,7 +39,8 @@
     "react-dom": "^19.0.0",
     "tailwind-merge": "^3.3.1",
     "whatsapp-web.js": "^1.30.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -47,6 +54,8 @@
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.10",
     "tw-animate-css": "^1.3.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "prisma": "^6.16.3",
+    "prisma-erd-generator": "^2.0.4"
   }
 }
