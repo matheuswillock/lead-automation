@@ -1,282 +1,428 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { useState, useEffect, useRef } from "react";
-import { BotMessageSquare, Loader } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { ModeToggle } from "@/components/ui/modeToggle";
-import { LocationInput } from "@/components/ui/LocationInput";
-import { MessageCircleMoreIcon } from "@/components/ui/message-circle-more";
-import { DownloadIcon } from "@/components/ui/download";
-import { SearchIcon } from "@/components/ui/search";
-import { FileCheck2Icon } from "@/components/ui/file-check-2";
-import { MapPinIcon } from "@/components/ui/map-pin";
-import { MapPinHouseIcon } from "@/components/ui/map-pin-house";
-import { MainProps } from "@/app/api/useCases/generateLeads";
-import { InputSerper } from "@/services/SerperService/Serper";
-import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
-import { Output } from "@/domain/Output";
-import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
-import LeadsTable from "@/components/leads-table";
+import { Search, MapPin, Users, BarChart3, Zap, CheckCircle2, ArrowRight, Download } from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
-  const [country, setCountry] = useState<string>("");
-  const [countryCode, setCountryCode] = useState<string>("BR");
-  const [location, setLocation] = useState<string>("");
-  const [leadType, setLeadType] = useState<string>("");
-  const [sendToWhatsApp, setSendToWhatsApp] = useState<boolean>(true);
-  const [searchLeads, setSearchLeads] = useState<OutputSearchLead | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isWhatsAppEnabled, setIsWhatsAppEnabled] = useState<boolean>(false);
-  const [whatsappMessage, setWhatsappMessage] = useState<string>(
-    `Olá! Tudo bem? 😊\n\nAqui é o Cheffia — uma solução moderna para gestão de pedidos e pagamentos em restaurantes!\n\nVocê consegue automatizar pedidos, integrar pagamentos via QR Code e muito mais.\n\nGostaria de saber mais? É só responder aqui. 🚀`
-  );
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const isGenerateDisabled =
-  !country ||
-  !location ||
-  !leadType ||
-  country.trim().length <= 3 ||
-  location.trim().length <= 3 ||
-  leadType.trim().length <= 3;
-
-  const input: InputSerper = {
-    query: leadType,
-    location: location,
-    country: countryCode.toLocaleLowerCase(),
-    language: "pt-br",
-    page: 1,
-  };
-
-  const mainProps: MainProps = {
-    input,
-    lastPage: 10,
-  };
-
-  const handleGenerateLeads = async () => {
-    setIsLoading(true);
-    try {
-      const res = await fetch("/api/generate-leads", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(mainProps),
-      });
-      const data: Output | any = await res.json();
-      if ((!res.ok || !data.isValid)) {
-        console.error("Erro ao gerar leads:", data.error);
-      }
-      console.log("Leads generated successfully:", data);
-      setSearchLeads(data.result.leads);
-    } catch (err) {
-      // Trate o erro
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDownloadCsv = () => {
-    if (searchLeads) {
-      GenerateCsvContent(searchLeads);
-    }
-  };
-
+export default function LandingPage() {
   return (
-    <div className="min-h-screen w-full bg-background text-foreground font-sans p-4 sm:p-6 md:p-8 lg:p-10 xl:p-12">
-      <div className="container mx-auto max-w-7xl">
-        <header className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <h1 className="font-heading text-3xl md:text-4xl font-bold">
-              Gerador de leads
-            </h1>
-            <ModeToggle />
+    <div className="min-h-screen w-full bg-background text-foreground">
+      {/* Header */}
+      <header className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <Search className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold">Lead Flow</span>
           </div>
-          <p className="text-muted-foreground mt-4">
-            Configure os parâmetros e gere sua lista de leads em segundos.
+          
+          <div className="hidden md:flex items-center gap-8">
+            <a href="#features" className="text-sm hover:text-primary transition-colors">Recursos</a>
+            <a href="#how-it-works" className="text-sm hover:text-primary transition-colors">Como Funciona</a>
+            <a href="#pricing" className="text-sm hover:text-primary transition-colors">Preços</a>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <ModeToggle />
+            <Link href="/generate">
+              <Button>Entrar</Button>
+            </Link>
+          </div>
+        </nav>
+      </header>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border bg-muted/50">
+                <Zap className="w-4 h-4 text-primary" />
+                <span className="text-sm">Geração de leads automatizada</span>
+              </div>
+              
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight">
+                Encontre leads qualificados em{" "}
+                <span className="text-primary">segundos</span>
+              </h1>
+              
+              <p className="text-lg text-muted-foreground">
+                Automatize sua prospecção com nossa plataforma inteligente. 
+                Busque empresas por localização, segmento e gere listas completas 
+                com dados de contato verificados.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/generate">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Começar Agora
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
+                </Link>
+                <Button size="lg" variant="outline" className="w-full sm:w-auto">
+                  Ver Demonstração
+                </Button>
+              </div>
+
+              <div className="flex items-center gap-8 pt-4">
+                <div>
+                  <div className="text-3xl font-bold text-primary">10k+</div>
+                  <div className="text-sm text-muted-foreground">Leads gerados</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-primary">500+</div>
+                  <div className="text-sm text-muted-foreground">Empresas ativas</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-primary">98%</div>
+                  <div className="text-sm text-muted-foreground">Satisfação</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary/10 rounded-3xl blur-3xl"></div>
+              <Card className="relative p-8 backdrop-blur">
+                <div className="space-y-6">
+                  <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+                    <MapPin className="w-8 h-8 text-primary" />
+                    <div className="flex-1">
+                      <div className="font-semibold">Busca por Localização</div>
+                      <div className="text-sm text-muted-foreground">São Paulo, Brasil</div>
+                    </div>
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  </div>
+                  
+                  <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/50">
+                    <Search className="w-8 h-8 text-primary" />
+                    <div className="flex-1">
+                      <div className="font-semibold">Tipo de Negócio</div>
+                      <div className="text-sm text-muted-foreground">Restaurantes, Cafés</div>
+                    </div>
+                    <CheckCircle2 className="w-5 h-5 text-green-500" />
+                  </div>
+                  
+                  <div className="flex items-center gap-4 p-4 rounded-lg bg-primary/10">
+                    <Download className="w-8 h-8 text-primary" />
+                    <div className="flex-1">
+                      <div className="font-semibold">Exportar Dados</div>
+                      <div className="text-sm text-muted-foreground">150 leads encontrados</div>
+                    </div>
+                    <div className="text-2xl font-bold text-primary">✓</div>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Recursos <span className="text-primary">poderosos</span> para sua equipe
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Tudo que você precisa para encontrar, gerenciar e converter leads em clientes.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Search className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Busca Inteligente</h3>
+              <p className="text-muted-foreground">
+                Encontre empresas por localização, tipo de negócio e outros critérios personalizados.
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <MapPin className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Geolocalização</h3>
+              <p className="text-muted-foreground">
+                Busque leads em qualquer cidade ou região do Brasil com precisão.
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Users className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Dados Verificados</h3>
+              <p className="text-muted-foreground">
+                Informações atualizadas com telefone, endereço e horários de funcionamento.
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Download className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Exportação Fácil</h3>
+              <p className="text-muted-foreground">
+                Exporte seus leads em CSV ou Excel com um clique para usar em qualquer CRM.
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <BarChart3 className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Analytics Completo</h3>
+              <p className="text-muted-foreground">
+                Acompanhe métricas de performance e otimize sua estratégia de prospecção.
+              </p>
+            </Card>
+
+            <Card className="p-6 hover:shadow-lg transition-shadow">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
+                <Zap className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Automação Inteligente</h3>
+              <p className="text-muted-foreground">
+                Integre com WhatsApp e automatize o primeiro contato com seus leads.
+              </p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* How it Works Section */}
+      <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Como funciona o <span className="text-primary">Lead Flow</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Um processo simples e direto para transformar buscas em leads qualificados.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                1
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Defina o Alvo</h3>
+              <p className="text-muted-foreground">
+                Escolha a localização e o tipo de negócio que você quer prospectar.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                2
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Busque Leads</h3>
+              <p className="text-muted-foreground">
+                Nossa IA busca e organiza milhares de leads qualificados automaticamente.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                3
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Revise os Dados</h3>
+              <p className="text-muted-foreground">
+                Visualize e filtre os leads encontrados com todas as informações relevantes.
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                4
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Exporte e Venda</h3>
+              <p className="text-muted-foreground">
+                Baixe sua lista e comece a prospectar com dados atualizados e verificados.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+              Preços <span className="text-primary">simples</span> e transparentes
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Comece gratuitamente. Pague apenas pelo que usar, sem surpresas.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto">
+            <Card className="p-8 md:p-12 border-2 border-primary">
+              <div className="text-center mb-8">
+                <div className="inline-flex px-4 py-1 rounded-full bg-primary text-primary-foreground text-sm font-semibold mb-4">
+                  Plano Único
+                </div>
+                <h3 className="text-3xl font-bold mb-4">Lead Flow Professional</h3>
+                <p className="text-muted-foreground mb-6">
+                  Tudo que você precisa para gerenciar seu time de vendas
+                </p>
+                
+                <div className="flex items-center justify-center gap-4 mb-6">
+                  <div>
+                    <div className="text-sm text-muted-foreground">Assinatura Base</div>
+                    <div className="text-4xl font-bold text-primary">R$ 59,90<span className="text-lg">/mês</span></div>
+                  </div>
+                  <div className="text-2xl text-muted-foreground">+</div>
+                  <div>
+                    <div className="text-sm text-muted-foreground">Por Operador</div>
+                    <div className="text-4xl font-bold text-primary">R$ 19,90<span className="text-lg">/mês</span></div>
+                  </div>
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-8">
+                  Valor fixo mensal para acesso à plataforma + operadores adicionais
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6 mb-8">
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Leads ilimitados</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Dashboard com analytics</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Gestão de operadores</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Suporte via email</span>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Pipeline Kanban completo</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Automações inteligentes</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Relatórios personalizados</span>
+                  </div>
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Atualizações automáticas</span>
+                  </div>
+                </div>
+              </div>
+
+              <Button size="lg" className="w-full">
+                Começar Agora
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+
+              <p className="text-center text-sm text-muted-foreground mt-4">
+                Sem contratos de fidelidade • Cancele quando quiser
+              </p>
+            </Card>
+
+            <div className="mt-12 p-6 rounded-lg bg-muted/50 border">
+              <h4 className="font-semibold mb-4">Exemplo de cálculo:</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">Assinatura base</span>
+                  <span className="font-semibold">R$ 59,90</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">3 operadores × R$ 19,90</span>
+                  <span className="font-semibold">R$ 59,70</span>
+                </div>
+                <div className="border-t pt-2 flex justify-between text-base">
+                  <span className="font-semibold">Total mensal</span>
+                  <span className="font-bold text-primary">R$ 119,60</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-4">
+                Escale sua equipe sem limites de leads. Adicione ou remova operadores a qualquer momento.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-4xl text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            Pronto para acelerar suas vendas?
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Junte-se a centenas de empresas que já automatizaram sua prospecção com o Lead Flow.
           </p>
-        </header>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/generate">
+              <Button size="lg">
+                Começar Gratuitamente
+                <ArrowRight className="ml-2 w-4 h-4" />
+              </Button>
+            </Link>
+            <Button size="lg" variant="outline">
+              Falar com Vendas
+            </Button>
+          </div>
+        </div>
+      </section>
 
-        <main className="grid grid-col-1 lg:grid-cols-5 gap-8">
-          <section className="lg:col-span-2 flex flex-col gap-8">
-            <Card className=" ">
-              <CardHeader className="flex items-center space-x-2">
-                <MapPinIcon />
-                <CardTitle>Defina sua busca</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>País</Label>
-                  <LocationInput
-                    placeholder="Ex: Brazil"
-                    onLocationSelect={(location) => {
-                      setCountry(location.canonicalName ?? "");
-                      setCountryCode(location.countryCode ?? "");
-                    }}
-                    initialValue={country}
-                    filterType="Country"
-                  />
+      {/* Footer */}
+      <footer className="border-t py-12 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <Search className="w-6 h-6 text-primary-foreground" />
                 </div>
-                <div className="space-y-2">
-                  <Label>Localização</Label>
-                  <LocationInput
-                    placeholder="Ex: Sao Paulo"
-                    onLocationSelect={(location) => {
-                      setLocation(location.canonicalName ?? "");
-                      setCountryCode(location.countryCode ?? "");
-                    }}
-                    initialValue={location}
-                    filterType="City"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Tipo de Lead</Label>
-                  <Input
-                    placeholder="Ex: Pizzaria"
-                    value={leadType}
-                    onChange={(e) => setLeadType(e.target.value)}
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant="secondary"
-                  className="hover:cursor-pointer font-semibold hover:bg-primary/80 w-[100%]"
-                  onClick={async () => {
-                    // TODO: Implementar o handler que faz a requisição para gerar os leads
-                    await handleGenerateLeads();
-                  }}
-                  disabled={isGenerateDisabled || isLoading}
-                >
-                  <SearchIcon />
-                  Gerar Leads
-                </Button>
-              </CardFooter>
-            </Card>
-
-            {/* TODO: Implementar a configuração da mensagem */}
-            {/* <Card>
-              <CardHeader className="flex items-center space-x-2">
-                <MessageCircleMoreIcon />
-                <CardTitle>Configure a Mensagem</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <Switch
-                    className="hover:cursor-pointer"
-                    checked={isWhatsAppEnabled}
-                    onCheckedChange={setIsWhatsAppEnabled}
-                    disabled
-                  />
-                  <Label className="">
-                    Disparar para o
-                    <span className="font-semibold transition-all duration-200 hover:underline hover:text-primary-foreground decoration-primary hover:underline-offset-4">
-                      WhatsApp
-                    </span>
-                  </Label>
-                </div>
-                <div className="space-y-2">
-                  <Label>Mensagem</Label>
-                  <Textarea
-                    placeholder="Digite a mensagem que será enviada para os leads!"
-                    value={whatsappMessage}
-                    onChange={(e) => setWhatsappMessage(e.target.value)}
-                    className="h-60"
-                  />
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button
-                  variant="secondary"
-                  className="hover:cursor-pointer font-semibold hover:bg-primary/80"
-                  onClick={async () => {
-                    // TODO: Implementar o handler que faz a requisição para gerar os leads
-                    await handleGenerateLeads();
-                  }}
-                  disabled={isGenerateDisabled || isLoading}
-                >
-                  <SearchIcon />
-                  Gerar Leads
-                </Button>
-              </CardFooter>
-            </Card> */}
-          </section>
-
-          <section className="lg:col-span-3">
-            <Card className="h-full">
-              <CardHeader className="flex flex-row items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <FileCheck2Icon />
-                  <CardTitle>Resultados</CardTitle>
-                </div>
-                <Button
-                  variant="secondary"
-                  className="hover:cursor-pointer hover:bg-primary/80 font-semibold"
-                  onClick={handleDownloadCsv}
-                  disabled={!searchLeads || isLoading}
-                >
-                  <DownloadIcon />
-                  Baixar CSV
-                </Button>
-
-                {/* TODO: Implementar Upload de CSV */}
-                {/* <Button
-                  variant="secondary"
-                  className="hover:cursor-pointer font-semibold"
-                  // onClick={handleImportCsvClick}
-                >
-                  Importar CSV
-                </Button>
-                <input
-                  type="file"
-                  accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                  // ref={fileInputRef}
-                  style={{ display: "none" }}
-                  // onChange={handleFileChange}
-                /> */}
-              </CardHeader>
-
-              {searchLeads ? (
-                <CardContent>
-                  <LeadsTable leads={searchLeads} />
-                </CardContent>
-              ) : (
-                <CardContent>
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-96">
-                      <Loader className="animate-spin h-12 w-12" />
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-96 text-center text-muted-foreground p-4">
-                      <BotMessageSquare
-                        size={48}
-                        className="mb-4 text-gray-400"
-                      />
-                      <h3 className="text-lg font-semibold mb-2">
-                        Aguardando geração
-                      </h3>
-                      <p className="max-w-xs">
-                        Os leads encontrados aparecerão aqui após você clicar em
-                        "Gerar Leads".
-                      </p>
-                    </div>
-                  )}
-                </CardContent>
-              )}
-            </Card>
-          </section>
-        </main>
-      </div>
+                <span className="text-xl font-bold">Lead Flow</span>
+              </div>
+              <p className="text-muted-foreground mb-4">
+                Plataforma de automação de prospecção e gestão de leads para equipes de vendas modernas.
+              </p>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>© 2025 Lead Flow. Todos os direitos reservados.</span>
+              </div>
+            </div>
+            
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground mb-2">
+                Desenvolvido com 🧡 por
+              </p>
+              <a 
+                href="https://github.com/matheuswillock" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline font-semibold text-lg"
+              >
+                Willock's House
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
