@@ -1,7 +1,8 @@
 import { motion } from "motion/react";
 import { Card } from "../ui/card";
-import { ArrowRight, CheckCircle2, Link } from "lucide-react";
+import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "../ui/button";
+import Link from "next/link";
 
 export default function Pricing() {
   return (

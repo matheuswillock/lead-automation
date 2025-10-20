@@ -26,7 +26,7 @@ export default function Hero()  {
                   ease: "easeInOut",
                 }}
               >
-                <Zap className="w-4 h-4 text-[#FF5722]" />
+                <Zap className="w-4 h-4 text-primary" />
               </motion.div>
               <span className="text-sm">
                 Extração global de leads • Qualquer país
