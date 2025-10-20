@@ -1,6 +1,4 @@
 import { Geist, Geist_Mono } from "next/font/google";
-// import "./globals.css";
-// @ts-ignore: side-effect CSS import without type declarations
 import "../app/globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/next";

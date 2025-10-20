@@ -79,10 +79,9 @@ export default function Home() {
       if ((!res.ok || !data.isValid)) {
         console.error("Erro ao gerar leads:", data.error);
       }
-      console.log("Leads generated successfully:", data);
       setSearchLeads(data.result.leads);
     } catch (err) {
-      // Trate o erro
+      console.error("Erro ao gerar leads:", err);
     } finally {
       setIsLoading(false);
     }

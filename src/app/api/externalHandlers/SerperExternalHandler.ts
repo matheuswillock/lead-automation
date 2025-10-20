@@ -62,8 +62,6 @@ export const SerperApi = {
 
   getLocations: async (input: InputLocations): Promise<Output> => {
     try {
-
-      console.info("Fetching locations with input:", input);
       
       if (!DEV_BASE_URL) {
         throw new Error("DEV Base URL is not configured");

@@ -16,6 +16,7 @@ import {
   CommandItem,
 } from "./command";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface LocationInputProps {
   placeholder: string;
@@ -48,7 +49,7 @@ export function LocationInput({
     return `https://flagsapi.com/${countryCode.toUpperCase()}/flat/64.png`;
   };
 
-  const handleSelectLocation = (locations: LocationData[]) => {
+  const handleSelectLocation = useCallback((locations: LocationData[]) => {
     let filtered = locations;
 
     if (filterType === "Country") {
@@ -65,7 +66,7 @@ export function LocationInput({
     }));
 
     setSelectedLocations(locationsToSelect);
-  };
+  }, [filterType]);
 
   const fetchLocations = useCallback(
     async (q: string): Promise<void> => {
@@ -83,7 +84,7 @@ export function LocationInput({
       } finally {
         setIsLoading(false);
       }
-    }, []
+    }, [handleSelectLocation]
   );
 
   // Busca inicial ao montar
@@ -124,7 +125,7 @@ export function LocationInput({
                     return selected ? (
                       <span className="flex items-center gap-2">
                         {selected.CountryFlag && (
-                          <img
+                          <Image
                             src={selected.CountryFlag}
                             alt={selected.countryCode}
                             width={20}
@@ -173,7 +174,7 @@ export function LocationInput({
                   >
                     <span className="flex items-center gap-2">
                       {location.CountryFlag && (
-                        <img
+                        <Image
                           src={location.CountryFlag}
                           alt={location.countryCode}
                           width={20}

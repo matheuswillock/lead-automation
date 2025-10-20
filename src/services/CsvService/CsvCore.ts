@@ -19,10 +19,8 @@ export const GenerateCsvContent = (
   lastPage?: number
 ) => {
 
-  console.log("Starting CSV generation...");
-
   if (!searchLeads || !searchLeads.places || searchLeads.places.length === 0) {
-    console.log("⛔️ Nenhum dado encontrado para gerar o CSV.");
+    console.warn("Nenhum dado encontrado para gerar o CSV.");
     return;
   }
 
@@ -38,7 +36,6 @@ export const GenerateCsvContent = (
     const isMobileNumber = /^\d{2}9\d{8}$/.test(whatsappLink.replace('https://wa.me/55', ''));
 
     if (!isMobileNumber && !place.website) {
-      console.log(`⛔️ Removido: ${place.title} (sem celular e sem site)`);
       return;
     }
 
@@ -47,7 +44,7 @@ export const GenerateCsvContent = (
   });
 
   if (table.length === 0) {
-    console.log("⛔️ Nenhum dado válido encontrado para gerar o CSV.");
+    console.warn("Nenhum dado válido encontrado para gerar o CSV.");
     return;
   }
 
@@ -75,8 +72,6 @@ export const GenerateCsvContent = (
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
-  console.log(`✅ Excel '${excelFilename}' gerado com sucesso! (${table.length} contatos válidos)`);
 
   return {
     filename: excelFilename,
