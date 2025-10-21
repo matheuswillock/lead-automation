@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation"
 import { Loader, AlertCircle, CheckCircle2, Crown } from "lucide-react"
 import { motion } from "motion/react"
 import { cn } from "@/lib/utils"
+import Link from "next/link"
 
 export function SignupForm({ 
   className,
@@ -274,12 +275,12 @@ export function SignupForm({
       </motion.div>
 
       <div className="text-center">
-        <a
+        <Link
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           ← Voltar para página inicial
-        </a>
+        </Link>
       </div>
     </div>
   );

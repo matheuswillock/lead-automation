@@ -22,6 +22,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { Loader, AlertCircle, CheckCircle2, Crown } from "lucide-react";
 import { motion } from "motion/react";
+import Link from "next/link";
 
 export function LoginForm({
   className,
@@ -267,12 +268,12 @@ export function LoginForm({
       )}
 
       <div className="text-center">
-        <a
+        <Link
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           ← Voltar para página inicial
-        </a>
+        </Link>
       </div>
     </div>
   );

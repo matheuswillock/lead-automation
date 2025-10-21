@@ -14,11 +14,10 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    console.log('Webhook AbacatePay recebido:', body)
 
     const { event, data } = body
 
-    // Validar webhook (em produção, verificar assinatura)
+    // TODO: Validar webhook (em produção, verificar assinatura)
     // const signature = request.headers.get('x-abacatepay-signature')
     // if (!validateSignature(signature, body)) {
     //   return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
@@ -38,7 +37,8 @@ export async function POST(request: NextRequest) {
         break
       
       default:
-        console.log('Evento não tratado:', event)
+        // Evento não tratado - apenas registrar
+        console.warn('Evento não tratado:', event)
     }
 
     return NextResponse.json({ received: true })
@@ -76,9 +76,6 @@ async function handleBillingPaid(data: any) {
     // Ativar assinatura
     const subscription = await SubscriptionService.activateSubscription(profile.id)
 
-    console.log('Assinatura ativada com sucesso:', subscription.id)
-    console.log('Billing ID:', billingId)
-
     // TODO: Enviar email de confirmação para o usuário
     // await EmailService.sendSubscriptionActivated(profile.email, subscription)
 
@@ -111,8 +108,6 @@ async function handleBillingRefunded(data: any) {
 
     await SubscriptionService.cancelSubscription(profile.subscription.id)
 
-    console.log('Assinatura cancelada por reembolso')
-
     // TODO: Enviar email de notificação
     // await EmailService.sendSubscriptionRefunded(profile.email)
 
@@ -135,7 +130,7 @@ async function handleBillingExpired(data: any) {
       return
     }
 
-    console.log('Cobrança expirada para profileId:', profileId)
+    console.warn('Cobrança expirada para profileId:', profileId)
 
     // TODO: Notificar usuário sobre expiração
     // await EmailService.sendBillingExpired(profile.email)

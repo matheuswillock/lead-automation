@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { motion } from 'motion/react'
 import QRCodeLib from 'qrcode'
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
@@ -85,10 +85,6 @@ export default function CheckoutPage() {
     return cpf.replace(/\D/g, '')
   }
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
   const checkAuth = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -108,6 +104,11 @@ export default function CheckoutPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    checkAuth()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const fetchPlanInfo = async () => {
     try {
@@ -488,4 +489,17 @@ export default function CheckoutPage() {
       </motion.div>
     </div>
   );
+}
+
+// Wrapper com Suspense para evitar erro de build
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen w-full bg-background flex items-center justify-center">
+        <Loader className="h-12 w-12 text-primary animate-spin" />
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
+  )
 }
