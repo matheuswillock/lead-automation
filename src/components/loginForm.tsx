@@ -116,13 +116,16 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>{isLogin ? 'Entrar na sua conta' : 'Criar sua conta'}</CardTitle>
+          <CardTitle>
+            {isLogin ? "Entrar na sua conta" : "Criar sua conta"}
+          </CardTitle>
           <CardDescription>
-            {isLogin 
-              ? 'Digite seu email abaixo para acessar sua conta' 
-              : 'Crie sua conta para assinar e começar a gerar leads'}
+            {isLogin
+              ? "Digite seu email abaixo para acessar sua conta"
+              : "Crie sua conta para assinar e começar a gerar leads"}
           </CardDescription>
-        </CardHeader>        <CardContent>
+        </CardHeader>{" "}
+        <CardContent>
           <form onSubmit={handleAuth}>
             <FieldGroup>
               {message && (
@@ -130,8 +133,12 @@ export function LoginForm({
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
-                    {message.type === 'error' ? (
+                  <Alert
+                    variant={
+                      message.type === "error" ? "destructive" : "default"
+                    }
+                  >
+                    {message.type === "error" ? (
                       <AlertCircle className="h-4 w-4" />
                     ) : (
                       <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -165,9 +172,9 @@ export function LoginForm({
                     </a>
                   )}
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -176,37 +183,40 @@ export function LoginForm({
                   minLength={6}
                 />
                 {!isLogin && (
-                  <FieldDescription>
-                    Mínimo de 6 caracteres
-                  </FieldDescription>
+                  <FieldDescription>Mínimo de 6 caracteres</FieldDescription>
                 )}
               </Field>
               <Field>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full cursor-pointer"
+                  disabled={loading}
+                >
                   {loading ? (
                     <>
                       <Loader className="animate-spin" />
                       Processando...
                     </>
                   ) : isLogin ? (
-                    'Entrar'
+                    "Entrar"
                   ) : (
-                    'Criar conta'
+                    "Criar conta"
                   )}
                 </Button>
-                <Button 
-                  variant="outline" 
+                {/* TODO: Implement Google login */}
+                {/* <Button
+                  variant="outline"
                   type="button"
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onClick={handleGoogleLogin}
                   disabled={loading}
                 >
                   Entrar com Google
-                </Button>
+                </Button> */}
                 <FieldDescription className="text-center">
                   {isLogin ? (
                     <>
-                      Não tem uma conta?{' '}
+                      Não tem uma conta?{" "}
                       <a
                         href="/register"
                         className="text-primary hover:underline font-medium"
@@ -216,14 +226,14 @@ export function LoginForm({
                     </>
                   ) : (
                     <>
-                      Já tem uma conta?{' '}
+                      Já tem uma conta?{" "}
                       <button
                         type="button"
                         onClick={() => {
                           setIsLogin(true);
                           setMessage(null);
                         }}
-                        className="text-primary hover:underline font-medium"
+                        className="text-primary hover:underline font-medium cursor-pointer"
                         disabled={loading}
                       >
                         Entrar

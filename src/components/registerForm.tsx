@@ -123,8 +123,12 @@ export function SignupForm({
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                 >
-                  <Alert variant={message.type === 'error' ? 'destructive' : 'default'}>
-                    {message.type === 'error' ? (
+                  <Alert
+                    variant={
+                      message.type === "error" ? "destructive" : "default"
+                    }
+                  >
+                    {message.type === "error" ? (
                       <AlertCircle className="h-4 w-4" />
                     ) : (
                       <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -136,13 +140,13 @@ export function SignupForm({
 
               <Field>
                 <FieldLabel htmlFor="name">Nome Completo</FieldLabel>
-                <Input 
-                  id="name" 
-                  type="text" 
-                  placeholder="João Silva" 
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="João Silva"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  required 
+                  required
                   disabled={loading}
                 />
               </Field>
@@ -163,8 +167,8 @@ export function SignupForm({
               </Field>
               <Field>
                 <FieldLabel htmlFor="password">Senha</FieldLabel>
-                <Input 
-                  id="password" 
+                <Input
+                  id="password"
                   type="password"
                   placeholder="••••••••"
                   value={password}
@@ -181,8 +185,8 @@ export function SignupForm({
                 <FieldLabel htmlFor="confirm-password">
                   Confirmar Senha
                 </FieldLabel>
-                <Input 
-                  id="confirm-password" 
+                <Input
+                  id="confirm-password"
                   type="password"
                   placeholder="••••••••"
                   value={confirmPassword}
@@ -194,29 +198,36 @@ export function SignupForm({
                 <FieldDescription>Digite sua senha novamente.</FieldDescription>
               </Field>
               <Field>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button
+                  type="submit"
+                  className="w-full cursor-pointer"
+                  disabled={loading}
+                >
                   {loading ? (
                     <>
                       <Loader className="animate-spin" />
                       Processando...
                     </>
                   ) : (
-                    'Criar Conta'
+                    "Criar Conta"
                   )}
                 </Button>
-                <Button 
-                  variant="outline" 
+
+                  {/* TODO: Implement Google signup */}
+                {/* <Button
+                  variant="outline"
                   type="button"
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   onClick={handleGoogleSignup}
                   disabled={loading}
                 >
                   Cadastrar com Google
-                </Button>
+                </Button> */}
+
                 <FieldDescription className="text-center">
-                  Já tem uma conta?{' '}
-                  <a 
-                    href="/auth" 
+                  Já tem uma conta?{" "}
+                  <a
+                    href="/auth"
                     className="text-primary hover:underline font-medium"
                   >
                     Entrar
@@ -254,5 +265,5 @@ export function SignupForm({
         </a>
       </div>
     </div>
-  )
+  );
 }
