@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+  runtime  = "bun"
+}
+
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./erd/diagram.md"
+  format   = "mermaid"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Profile {
+  id           String        @id @unique @default(uuid()) @db.Uuid
+  supabaseId   String?       @unique @db.Uuid
+  username     String?       @unique @db.VarChar(30)
+  avatarUrl    String?
+  createdAt    DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime      @updatedAt @db.Timestamptz(6)
+  subscription Subscription?
+
+  @@map("profiles")
+}
+
+enum SubscriptionStatus {
+  PENDING // Aguardando pagamento
+  ACTIVE // Assinatura ativa
+  CANCELLED // Assinatura cancelada
+  EXPIRED // Assinatura expirada
+}
+
+model Subscription {
+  id                 String             @id @unique @default(uuid()) @db.Uuid
+  profileId          String             @unique @db.Uuid
+  subscriptionPlanId String             @db.Uuid
+  status             SubscriptionStatus @default(PENDING)
+  currentPeriodStart DateTime           @db.Timestamptz(6)
+  currentPeriodEnd   DateTime           @db.Timestamptz(6)
+  createdAt          DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
+  profile            Profile            @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  plan               SubscriptionPlan   @relation(fields: [subscriptionPlanId], references: [id])
+
+  @@index([profileId])
+  @@index([subscriptionPlanId])
+  @@map("subscriptions")
+}
+
+model SubscriptionPlan {
+  id            String         @id @unique @default(uuid()) @db.Uuid
+  name          String         @unique @db.VarChar(50)
+  price         Decimal        @db.Decimal(10, 2)
+  description   String?
+  createdAt     DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime       @updatedAt @db.Timestamptz(6)
+  subscriptions Subscription[]
+
+  @@map("subscription_plans")
+}

@@ -60,7 +60,7 @@ export default function Hero()  {
               transition={{ duration: 0.6, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <Link href="/generate" className="w-full sm:w-auto">
+              <Link href="/register" className="w-full sm:w-auto">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
