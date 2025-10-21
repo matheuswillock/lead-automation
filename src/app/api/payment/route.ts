@@ -63,8 +63,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Cobrança PIX criada:', paymentQrCodeResponse)
-
     // Retornar dados da cobrança (incluindo QR Code PIX)
     return NextResponse.json({
       success: true,
@@ -91,8 +89,8 @@ export async function GET(request: NextRequest) {
     const billingId = searchParams.get('billingId')
 
     if (billingId) {
-      // Verificar status da cobrança na AbacatePay
-      const result = await AbacatePayService.getBilling(billingId)
+      // Verificar status do QR Code PIX na AbacatePay
+      const result = await AbacatePayService.checkPixStatus(billingId)
       
       if (!result.success || !result.data) {
         return NextResponse.json(

@@ -216,6 +216,37 @@ export class AbacatePayService {
   }
 
   /**
+   * Verificar status de um QR Code PIX
+   */
+  static async checkPixStatus(pixId: string) {
+    try {
+      if (!this.apiKey) {
+        throw new Error('ABACATEPAY_API_KEY não configurada')
+      }
+
+      const response = await axios.get<{ error: any; data: QrCodeResponse }>(
+        `${ABACATEPAY_API_URL}/pixQrCode/check?id=${pixId}`,
+        {
+          headers: {
+            'Authorization': `Bearer ${this.apiKey}`,
+          },
+        }
+      )
+
+      return {
+        success: true,
+        data: response.data.data,
+      }
+    } catch (error: any) {
+      console.error('Erro ao verificar PIX:', error.response?.data || error.message)
+      return {
+        success: false,
+        error: error.response?.data?.message || 'Erro ao verificar PIX',
+      }
+    }
+  }
+
+  /**
    * Buscar informações de uma cobrança
    */
   static async getBilling(billingId: string) {

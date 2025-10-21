@@ -126,10 +126,10 @@ export default function CheckoutPage() {
 
   // Gerar QR Code no Canvas quando billing estiver disponível
   useEffect(() => {
-    if (billing?.brCodeBase64 && qrCanvasRef.current && showPixQRCode) {
+    if (billing?.brCode && qrCanvasRef.current && showPixQRCode) {
       QRCodeLib.toCanvas(
         qrCanvasRef.current,
-        billing.brCodeBase64,
+        billing.brCode, // CORRIGIDO: usar brCode (string PIX)
         {
           width: 256,
           margin: 2,
@@ -350,16 +350,16 @@ export default function CheckoutPage() {
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          value={billing.pixQrCode?.brCode}
+                          value={billing.brCode || ''} 
                           readOnly
                           className="flex-1 px-3 py-2 text-xs bg-background border rounded"
                         />
                         <Button
                           size="sm"
                           onClick={() => {
-                            navigator.clipboard.writeText(
-                              billing.pixQrCode?.brCode
-                            );
+                            if (billing.brCode) {
+                              navigator.clipboard.writeText(billing.brCode);
+                            }
                           }}
                         >
                           Copiar
