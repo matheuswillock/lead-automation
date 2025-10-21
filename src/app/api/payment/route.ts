@@ -1,19 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
 import { ProfileService } from '@/services/ProfileService/ProfileService'
+import { AbacatePayService } from '@/services/AbacatePayService/AbacatePayService'
 
 /**
- * API para processar pagamento e ativar assinatura
- * Por enquanto apenas simula, depois integrará com gateway de pagamento
+ * API para processar pagamento via AbacatePay (PIX)
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { supabaseId, paymentMethod, paymentData } = body
+    const { supabaseId, customer } = body
 
     if (!supabaseId) {
       return NextResponse.json(
         { error: 'supabaseId é obrigatório' },
+        { status: 400 }
+      )
+    }
+
+    if (!customer || !customer.name || !customer.email) {
+      return NextResponse.json(
+        { error: 'Dados do cliente são obrigatórios (name, email)' },
         { status: 400 }
       )
     }
@@ -28,35 +35,41 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Integrar com gateway de pagamento (Stripe, Mercado Pago, etc)
-    // Por enquanto, apenas ativa direto
-    
-    // Aqui viria a lógica de:
-    // 1. Processar pagamento com gateway
-    // 2. Validar resposta do gateway
-    // 3. Se aprovado, ativar subscription
+    // Buscar plano
+    const plan = await SubscriptionService.getProfessionalPlan()
 
-    // Simulando aprovação de pagamento
-    const paymentApproved = true
+    // Criar qrCode pix via AbacatePay
+    const paymentQrCodeResponse = await AbacatePayService.createQrCodePix(
+      {
+        amount: Math.round(Number(plan.price) * 100), // convert to cents
+        expiresIn: 900, // 15 minutos
+        description: plan.description || 'Assinatura Professional',
+        customer: {
+          name: customer.name,
+          cellphone: customer.cellphone,
+          email: customer.email,
+          taxId: customer.taxId,
+        },
+        metadata: {
+          externalId: profile.id,
+        }
+      }
+    )
 
-    if (!paymentApproved) {
+    if (!paymentQrCodeResponse.success) {
       return NextResponse.json(
-        { error: 'Pagamento não aprovado', needsPayment: true },
-        { status: 402 }
+        { error: 'Erro ao criar cobrança', details: paymentQrCodeResponse.error },
+        { status: 500 }
       )
     }
 
-    // Ativar assinatura
-    const subscription = await SubscriptionService.activateSubscription(profile.id)
+    console.log('Cobrança PIX criada:', paymentQrCodeResponse)
 
-    // Buscar perfil atualizado
-    const updatedProfile = await ProfileService.getProfileById(profile.id)
-
+    // Retornar dados da cobrança (incluindo QR Code PIX)
     return NextResponse.json({
       success: true,
-      profile: updatedProfile,
-      subscription,
-      message: 'Pagamento processado e assinatura ativada com sucesso!',
+      billing: paymentQrCodeResponse.data,
+      message: 'Cobrança PIX criada com sucesso!',
     }, { status: 200 })
 
   } catch (error: any) {
@@ -75,30 +88,49 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const supabaseId = searchParams.get('supabaseId')
+    const billingId = searchParams.get('billingId')
 
-    if (!supabaseId) {
-      return NextResponse.json(
-        { error: 'supabaseId é obrigatório' },
-        { status: 400 }
-      )
+    if (billingId) {
+      // Verificar status da cobrança na AbacatePay
+      const result = await AbacatePayService.getBilling(billingId)
+      
+      if (!result.success || !result.data) {
+        return NextResponse.json(
+          { error: 'Erro ao verificar cobrança', details: result.error },
+          { status: 500 }
+        )
+      }
+
+      return NextResponse.json({
+        billing: result.data,
+        isPaid: result.data.status === 'PAID',
+      })
     }
 
-    const profile = await ProfileService.getProfileBySupabaseId(supabaseId)
+    if (supabaseId) {
+      // Verificar subscription do usuário
+      const profile = await ProfileService.getProfileBySupabaseId(supabaseId)
 
-    if (!profile) {
-      return NextResponse.json(
-        { error: 'Perfil não encontrado' },
-        { status: 404 }
-      )
+      if (!profile) {
+        return NextResponse.json(
+          { error: 'Perfil não encontrado' },
+          { status: 404 }
+        )
+      }
+
+      const subscription = await SubscriptionService.getSubscriptionByProfileId(profile.id)
+
+      return NextResponse.json({
+        subscription,
+        needsPayment: subscription?.status === 'PENDING',
+        isActive: subscription?.status === 'ACTIVE',
+      })
     }
 
-    const subscription = await SubscriptionService.getSubscriptionByProfileId(profile.id)
-
-    return NextResponse.json({
-      subscription,
-      needsPayment: subscription?.status === 'PENDING',
-      isActive: subscription?.status === 'ACTIVE',
-    })
+    return NextResponse.json(
+      { error: 'supabaseId ou billingId é obrigatório' },
+      { status: 400 }
+    )
 
   } catch (error: any) {
     console.error('Erro ao verificar pagamento:', error)

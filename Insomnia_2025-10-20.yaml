@@ -1,0 +1,239 @@
+type: collection.insomnia.rest/5.0
+name: Abacate Pay
+meta:
+  id: wrk_487b016871964a00860f3576dca33b9a
+  created: 1761007230546
+  modified: 1761007230546
+collection:
+  - url: https://api.abacatepay.com/v1/billing/create
+    name: Criar uma nova Cobrança
+    meta:
+      id: req_d94250a8655149b8ab20fc5ba37d0ab3
+      created: 1761007721568
+      modified: 1761007841693
+      isPrivate: false
+      sortKey: -1761007721568
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"frequency": "ONE_TIME",
+        	"methods": [
+        		"PIX"
+        	],
+        	"products": [
+        		{
+        			"externalId": "prod-1234",
+        			"name": "Assinatura de Programa Fitness",
+        			"description": "Acesso ao programa fitness premium por 1 mês.",
+        			"quantity": 2,
+        			"price": 2000
+        		}
+        	],
+        	"returnUrl": "https://example.com/billing",
+        	"completionUrl": "https://example.com/completion",
+        	"customerId": "cust_abcdefghij",
+        	"customer": {
+        		"name": "Daniel Lima",
+        		"cellphone": "(11) 4002-8922",
+        		"email": "daniel_lima@abacatepay.com",
+        		"taxId": "123.456.789-01"
+        	},
+        	"allowCoupons": false,
+        	"coupons": [
+        		"ABKT10",
+        		"ABKT5",
+        		"PROMO10"
+        	],
+        	"externalId": "seu_id_123"
+        }
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+        id: pair_a136df3843c145b58969bd9c01e5e82b
+      - name: Content-Type
+        value: application/json
+        id: pair_dc1c81c1157849d8a3c0f0b664bd84d5
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://api.abacatepay.com/v1/customer/list
+    name: Listar Clientes
+    meta:
+      id: req_ef5e8faa93f64e6baf57acbcfae16962
+      created: 1761007777376
+      modified: 1761007794110
+      isPrivate: false
+      sortKey: -1761007777376
+    method: GET
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+        id: pair_67e6d1f4df214397a0c9b46b08914d1a
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://api.abacatepay.com/v1/customer/create
+    name: Criar um novo Cliente
+    meta:
+      id: req_c75b784ce3de44c792fa06ba0ac830e9
+      created: 1761007816304
+      modified: 1761007936641
+      isPrivate: false
+      sortKey: -1761007816304
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "name": "Daniel Lima",
+          "cellphone": "(11) 4002-8922",
+          "email": "daniel_lima@abacatepay.com",
+          "taxId": "123.456.789-01"
+        }
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+        id: pair_4240f71559594f3d9ce1e859a6200abf
+      - name: Content-Type
+        value: application/json
+        id: pair_a2d05002ba0d4701934ac5a33190c2b5
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://api.abacatepay.com/v1/billing/list
+    name: Listar Cobranças
+    meta:
+      id: req_c046b60c81ac42e49939f5e5f3c07a39
+      created: 1761007979458
+      modified: 1761007993777
+      isPrivate: false
+      sortKey: -1761007979458
+    method: GET
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+        id: pair_076f31f704cf497a81f27c97aeee7cba
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://api.abacatepay.com/v1/pixQrCode/create
+    name: Criar QRCode PIX
+    meta:
+      id: req_e415a7e641f74c4c8f4cdb4be2de340a
+      created: 1761008055840
+      modified: 1761008089209
+      isPrivate: false
+      sortKey: -1761008055840
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"amount": 123,
+        	"expiresIn": 123,
+        	"description": "<string>",
+        	"customer": {
+        		"name": "Daniel Lima",
+        		"cellphone": "(11) 4002-8922",
+        		"email": "daniel_lima@abacatepay.com",
+        		"taxId": "123.456.789-01"
+        	},
+        	"metadata": {
+        		"externalId": "123"
+        	}
+        }
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+        id: pair_440035341621404787aba8096ceb6c30
+      - name: Content-Type
+        value: application/json
+        id: pair_0318ba17950946268a412ceaff59b8c7
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://api.abacatepay.com/v1/pixQrCode/simulate-payment
+    name: Simular Pagamento
+    meta:
+      id: req_8f7d665c7d50470bb623bd1363eaa57c
+      created: 1761008123900
+      modified: 1761008132799
+      isPrivate: false
+      sortKey: -1761008123900
+    method: POST
+    body:
+      text: '{   "metadata": {} }'
+      mimeType: application/json
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+      - name: Content-Type
+        value: application/json
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: https://api.abacatepay.com/v1/pixQrCode/check
+    name: Checar Status
+    meta:
+      id: req_208f204da1ca40b681a49bbdc78940e3
+      created: 1761008161362
+      modified: 1761008168653
+      isPrivate: false
+      sortKey: -1761008161362
+    method: GET
+    headers:
+      - name: Authorization
+        value: Bearer abc_dev_BGCaQ5bKXhCxpZQEJcnXnYFd
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_eea57095c641ee467e58f44e7785c56b95616820
+    created: 1761007230550
+    modified: 1761007230550
+environments:
+  name: Base Environment
+  meta:
+    id: env_eea57095c641ee467e58f44e7785c56b95616820
+    created: 1761007230548
+    modified: 1761007230548
+    isPrivate: false

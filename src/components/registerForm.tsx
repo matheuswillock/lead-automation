@@ -68,6 +68,23 @@ export function SignupForm({
       if (error) throw error
 
       if (data.user) {
+        // Criar perfil no banco de dados imediatamente
+        const onboardingResponse = await fetch('/api/onboarding', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            supabaseId: data.user.id,
+            email: data.user.email,
+            username: name,
+          }),
+        })
+
+        if (!onboardingResponse.ok) {
+          throw new Error('Erro ao criar perfil')
+        }
+
         setMessage({ 
           type: 'success', 
           text: 'Conta criada com sucesso! Redirecionando para pagamento...' 
