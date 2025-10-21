@@ -58,12 +58,15 @@ export function LoginForm({
           router.push('/generate');
         }, 1000);
       } else {
-        // Cadastro
+        // Cadastro (sem confirmação de email)
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             emailRedirectTo: `${window.location.origin}/auth/callback?next=/checkout`,
+            data: {
+              email_confirm: false, // Desabilitar confirmação de email
+            }
           },
         });
 
@@ -72,8 +75,13 @@ export function LoginForm({
         if (data.user) {
           setMessage({ 
             type: 'success', 
-            text: 'Cadastro realizado! Verifique seu email para confirmar e prosseguir com o pagamento.' 
+            text: 'Conta criada com sucesso! Redirecionando para pagamento...' 
           });
+          
+          // Redirecionar direto para checkout
+          setTimeout(() => {
+            router.push('/checkout');
+          }, 1500);
         }
       }
     } catch (error: any) {
@@ -108,11 +116,11 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>{isLogin ? 'Login to your account' : 'Create your account'}</CardTitle>
+          <CardTitle>{isLogin ? 'Entrar na sua conta' : 'Criar sua conta'}</CardTitle>
           <CardDescription>
             {isLogin 
-              ? 'Enter your email below to login to your account' 
-              : 'Create an account to subscribe and start generating leads'}
+              ? 'Digite seu email abaixo para acessar sua conta' 
+              : 'Crie sua conta para assinar e começar a gerar leads'}
           </CardDescription>
         </CardHeader>        <CardContent>
           <form onSubmit={handleAuth}>
@@ -147,13 +155,13 @@ export function LoginForm({
               </Field>
               <Field>
                 <div className="flex items-center">
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
+                  <FieldLabel htmlFor="password">Senha</FieldLabel>
                   {isLogin && (
                     <a
                       href="#"
                       className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                     >
-                      Forgot your password?
+                      Esqueceu sua senha?
                     </a>
                   )}
                 </div>
@@ -169,7 +177,7 @@ export function LoginForm({
                 />
                 {!isLogin && (
                   <FieldDescription>
-                    Minimum 6 characters
+                    Mínimo de 6 caracteres
                   </FieldDescription>
                 )}
               </Field>
@@ -178,12 +186,12 @@ export function LoginForm({
                   {loading ? (
                     <>
                       <Loader className="animate-spin" />
-                      Processing...
+                      Processando...
                     </>
                   ) : isLogin ? (
-                    'Login'
+                    'Entrar'
                   ) : (
-                    'Sign up'
+                    'Criar conta'
                   )}
                 </Button>
                 <Button 
@@ -193,27 +201,22 @@ export function LoginForm({
                   onClick={handleGoogleLogin}
                   disabled={loading}
                 >
-                  Login with Google
+                  Entrar com Google
                 </Button>
                 <FieldDescription className="text-center">
                   {isLogin ? (
                     <>
-                      Don&apos;t have an account?{' '}
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setIsLogin(false);
-                          setMessage(null);
-                        }}
+                      Não tem uma conta?{' '}
+                      <a
+                        href="/register"
                         className="text-primary hover:underline font-medium"
-                        disabled={loading}
                       >
-                        Sign up
-                      </button>
+                        Cadastre-se
+                      </a>
                     </>
                   ) : (
                     <>
-                      Already have an account?{' '}
+                      Já tem uma conta?{' '}
                       <button
                         type="button"
                         onClick={() => {
@@ -223,7 +226,7 @@ export function LoginForm({
                         className="text-primary hover:underline font-medium"
                         disabled={loading}
                       >
-                        Login
+                        Entrar
                       </button>
                     </>
                   )}
@@ -244,11 +247,11 @@ export function LoginForm({
           <div className="flex items-center justify-center gap-2">
             <Crown className="h-4 w-4 text-primary" />
             <p>
-              Only <strong className="text-primary">R$ 19,90/month</strong>
+              Apenas <strong className="text-primary">R$ 19,90/mês</strong>
             </p>
           </div>
           <p className="mt-1 text-xs">
-            Unlimited lead generation • Cancel anytime
+            Geração ilimitada de leads • Cancele quando quiser
           </p>
         </motion.div>
       )}
@@ -258,7 +261,7 @@ export function LoginForm({
           href="/"
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← Back to homepage
+          ← Voltar para página inicial
         </a>
       </div>
     </div>

@@ -118,7 +118,7 @@ export default function Pricing() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <Link href="/auth">
+                <Link href="/register">
                   <Button size="lg" className="w-full cursor-pointer">
                     Assinar Agora
                     <ArrowRight className="ml-2 w-4 h-4" />
