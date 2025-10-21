@@ -15,15 +15,6 @@ export function useOnboarding(user: User | null) {
   const [data, setData] = useState<OnboardingData | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!user) {
-      setLoading(false)
-      return
-    }
-
-    handleOnboarding()
-  }, [user])
-
   const handleOnboarding = async () => {
     if (!user) return
 
@@ -71,6 +62,16 @@ export function useOnboarding(user: User | null) {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
+    handleOnboarding()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user])
 
   const refreshProfile = async () => {
     if (!user) return
