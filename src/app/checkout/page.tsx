@@ -226,7 +226,18 @@ export default function CheckoutPage() {
         if (data.isPaid) {
           clearInterval(interval)
           setProcessing(false)
-          
+
+          // Ativar assinatura pendente
+          await fetch('/api/subscription/activate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              profileId: user.id,
+            }),
+          })
+
           // Redirecionar para página de geração
           setTimeout(() => {
             router.push('/generate')
@@ -434,7 +445,7 @@ export default function CheckoutPage() {
             <CardFooter className="flex flex-col gap-4">
               {!showPixQRCode && (
                 <Button
-                  className="w-full"
+                  className="w-full cursor-pointer"
                   size="lg"
                   onClick={handlePayment}
                   disabled={

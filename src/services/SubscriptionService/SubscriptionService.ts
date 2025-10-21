@@ -117,6 +117,55 @@ export class SubscriptionService {
   }
 
   /**
+   * Ativar uma assinatura pendente usando supabaseId
+   * IMPORTANTE: Recebe supabaseId (UUID do Supabase Auth), não profileId
+   */
+  static async activatePendingSubscription(supabaseId: string) {
+    // 1. Buscar profile usando supabaseId
+    const profile = await prisma.profile.findUnique({
+      where: { supabaseId },
+    })
+
+    if (!profile) {
+      throw new Error('Perfil não encontrado')
+    }
+
+    // 2. Buscar subscription usando o profileId correto
+    const subscription = await prisma.subscription.findUnique({
+      where: { profileId: profile.id },
+      include: {
+        plan: true,
+      },
+    })
+
+    if (!subscription) {
+      throw new Error('Assinatura não encontrada')
+    }
+
+    if (subscription.status !== 'PENDING') {
+      throw new Error(`Assinatura não está pendente. Status atual: ${subscription.status}`)
+    }
+
+    // 3. Ativar subscription
+    const now = new Date()
+    const periodEnd = new Date()
+    periodEnd.setDate(periodEnd.getDate() + 30) // 30 dias
+
+    return prisma.subscription.update({
+      where: { id: subscription.id },
+      data: {
+        status: 'ACTIVE',
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
+    })
+  }
+
+  /**
    * Busca subscription por profileId
    */
   static async getSubscriptionByProfileId(profileId: string) {
