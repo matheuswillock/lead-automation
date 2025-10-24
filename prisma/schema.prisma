@@ -28,11 +28,11 @@ model Profile {
 }
 
 enum SubscriptionStatus {
-  PENDING   // Aguardando pagamento
-  ACTIVE    // Assinatura ativa
+  PENDING // Aguardando pagamento
+  ACTIVE // Assinatura ativa
   CANCELLED // Assinatura cancelada
-  EXPIRED   // Assinatura expirada
-  LIFETIME  // Assinatura vitalícia (vendedores/parceiros)
+  EXPIRED // Assinatura expirada
+  LIFETIME // Assinatura vitalícia (vendedores/parceiros)
 }
 
 model Subscription {
