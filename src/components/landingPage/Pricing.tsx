@@ -16,11 +16,11 @@ export default function Pricing() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Preços <span className="text-primary">simples</span> e transparentes
+            Plano <span className="text-primary">Professional</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Apenas R$ 19,90/mês para extração ilimitada de leads em todo o
-            mundo.
+            Apenas R$ 19,90/mês para geração ilimitada de leads B2B.
+            Simples, transparente e sem surpresas.
           </p>
         </motion.div>
 
@@ -51,10 +51,10 @@ export default function Pricing() {
                   Plano Único
                 </motion.div>
                 <h3 className="text-3xl font-bold mb-4">
-                  Lead Generator Professional
+                  TheLeadsFy Professional
                 </h3>
                 <p className="text-muted-foreground mb-6">
-                  Extração e geração de leads rápida e consistente
+                  Acesso completo a todas as funcionalidades da plataforma
                 </p>
 
                 <motion.div
@@ -74,10 +74,10 @@ export default function Pricing() {
               <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <div className="space-y-4">
                   {[
-                    "Busca inteligente com filtros avançados",
-                    "Geolocalização global (qualquer país)",
-                    "Dados verificados e atualizados",
-                    "Exportação fácil em CSV/Excel",
+                    "Busca geográfica inteligente",
+                    "Dados completos e verificados",
+                    "Exportação instantânea CSV/Excel",
+                    "Geração ilimitada de leads",
                   ].map((feature, index) => (
                     <motion.div
                       key={index}
@@ -94,10 +94,10 @@ export default function Pricing() {
                 </div>
                 <div className="space-y-4">
                   {[
-                    "Extração ilimitada de leads",
-                    "Telefone e endereço completo",
+                    "Telefone, endereço e avaliações",
                     "Horários de funcionamento",
-                    "Suporte via email",
+                    "Resultados em tempo real",
+                    "Pagamento seguro via PIX",
                   ].map((feature, index) => (
                     <motion.div
                       key={index}

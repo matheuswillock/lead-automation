@@ -29,7 +29,7 @@ export default function Hero()  {
                 <Zap className="w-4 h-4 text-primary" />
               </motion.div>
               <span className="text-sm">
-                Extração global de leads • Qualquer país
+                TheLeadsFy • Geração de leads simplificada
               </span>
             </motion.div>
 
@@ -39,8 +39,11 @@ export default function Hero()  {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
             >
-              Extraia leads qualificados de{" "}
-              <span className="text-primary">qualquer lugar do mundo</span>
+              <span className="text-primary">Leadify</span> your business
+              <br />
+              <span className="text-2xl sm:text-3xl lg:text-4xl text-muted-foreground font-normal">
+                Leads certos, no lugar certo
+              </span>
             </motion.h1>
 
             <motion.p
@@ -49,9 +52,9 @@ export default function Hero()  {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-lg text-muted-foreground"
             >
-              Plataforma completa para geração e extração de leads de forma
-              rápida e consistente. Busque empresas em qualquer país, estado e
-              cidade, e gere listas completas com dados de contato verificados.
+              Geração de leads B2B simplificada através de busca geográfica inteligente.
+              Encontre prospects qualificados por localização e tipo de negócio.
+              Extração rápida, dados completos, exportação instantânea.
             </motion.p>
 
             <motion.div

@@ -1,6 +1,15 @@
 {
-  "name": "lead-automation",
+  "name": "theleadsfy",
   "version": "1.0.0",
+  "description": "TheLeadsFy - Plataforma SaaS de geração de leads B2B através de busca geográfica inteligente",
+  "author": "TheLeadsFy Team",
+  "license": "MIT",
+  "keywords": ["leads", "b2b", "automation", "saas", "prospecting", "sales"],
+  "homepage": "https://theleadsfy.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matheuswillock/lead-automation"
+  },
   "scripts": {
     "dev": "next dev",
     "dev:ngrok": "ngrok http --domain=nonzero-rodrick-mentholated.ngrok-free.dev 3000",
