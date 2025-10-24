@@ -1,4 +1,4 @@
-# Fluxo de Assinatura - Lead Generator
+# Fluxo de Assinatura - TheLeadsFy
 
 ## 📋 Visão Geral
 

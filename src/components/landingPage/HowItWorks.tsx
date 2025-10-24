@@ -12,11 +12,11 @@ export default function HowItWorks() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Como funciona o <span className="text-primary">Lead Generator</span>
+            Como funciona o <span className="text-primary">TheLeadsFy</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Um processo simples e rápido para extrair leads qualificados de
-            qualquer lugar.
+            Processo simples e rápido para encontrar leads qualificados. 
+            Do seu mapa de oportunidades ao fechamento.
           </p>
         </motion.div>
 
@@ -26,25 +26,25 @@ export default function HowItWorks() {
               number: 1,
               title: "Defina sua Busca",
               description:
-                "Escolha o país, estado, cidade e tipo de negócio que você quer extrair.",
+                "Escolha a localização e o tipo de negócio. Foque no seu mercado ideal.",
             },
             {
               number: 2,
-              title: "Extraia os Leads",
+              title: "Gere os Leads",
               description:
-                "Nossa plataforma gera e extrai milhares de leads de forma rápida e consistente.",
+                "Nossa plataforma busca e extrai leads em tempo real com dados completos.",
             },
             {
               number: 3,
-              title: "Revise os Dados",
+              title: "Revise e Filtre",
               description:
-                "Visualize e filtre os leads extraídos com todas as informações verificadas.",
+                "Visualize resultados com telefone, endereço e todas as informações necessárias.",
             },
             {
               number: 4,
-              title: "Exporte e Use",
+              title: "Exporte e Venda",
               description:
-                "Baixe sua lista e comece a prospectar com dados atualizados do mundo todo.",
+                "Baixe em CSV/Excel e comece a prospectar. Find leads, close deals.",
             },
           ].map((step, index) => (
             <motion.div

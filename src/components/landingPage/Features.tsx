@@ -14,12 +14,10 @@ export default function Features() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Recursos <span className="text-primary">poderosos</span> para sua
-            equipe
+            Recursos que <span className="text-primary">transformam</span> seu negócio
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Ferramentas essenciais para extração e gestão de leads em escala
-            global.
+            Ferramentas essenciais para encontrar e conquistar os leads certos
           </p>
         </motion.div>
 
@@ -35,10 +33,10 @@ export default function Features() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <Search className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Busca Inteligente</h3>
+              <h3 className="text-xl font-semibold mb-2">Busca Geográfica</h3>
               <p className="text-muted-foreground">
-                Extraia leads com precisão usando filtros avançados de
-                localização e segmento de negócio.
+                Encontre leads por localização precisa. Cidade, bairro ou região.
+                Você escolhe onde prospectar.
               </p>
             </Card>
           </motion.div>
@@ -55,11 +53,11 @@ export default function Features() {
                 <MapPin className="w-6 h-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold mb-2">
-                Geolocalização Global
+                Segmentação Inteligente
               </h3>
               <p className="text-muted-foreground">
-                Extraia leads de qualquer país, estado e cidade do mundo com
-                precisão absoluta.
+                Filtre por tipo de negócio e encontre exatamente o perfil de cliente 
+                que você precisa.
               </p>
             </Card>
           </motion.div>
@@ -75,10 +73,10 @@ export default function Features() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Dados Verificados</h3>
+              <h3 className="text-xl font-semibold mb-2">Dados Completos</h3>
               <p className="text-muted-foreground">
-                Informações atualizadas com telefone, endereço e horários de
-                funcionamento.
+                Nome, telefone, endereço, avaliações e horários de funcionamento. 
+                Tudo que você precisa para contatar.
               </p>
             </Card>
           </motion.div>
@@ -94,10 +92,10 @@ export default function Features() {
               <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
                 <Download className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Exportação Fácil</h3>
+              <h3 className="text-xl font-semibold mb-2">Exportação Instantânea</h3>
               <p className="text-muted-foreground">
-                Exporte seus leads em CSV ou Excel com um clique para usar em
-                qualquer CRM.
+                Baixe seus leads em CSV/Excel com um clique. Pronto para usar 
+                em qualquer ferramenta ou CRM.
               </p>
             </Card>
           </motion.div>

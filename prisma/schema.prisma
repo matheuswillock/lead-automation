@@ -32,6 +32,7 @@ enum SubscriptionStatus {
   ACTIVE // Assinatura ativa
   CANCELLED // Assinatura cancelada
   EXPIRED // Assinatura expirada
+  LIFETIME // Assinatura vitalícia (vendedores/parceiros)
 }
 
 model Subscription {
@@ -39,6 +40,7 @@ model Subscription {
   profileId          String             @unique @db.Uuid
   subscriptionPlanId String             @db.Uuid
   status             SubscriptionStatus @default(PENDING)
+  isLifetime         Boolean            @default(false) // Assinatura vitalícia
   currentPeriodStart DateTime           @db.Timestamptz(6)
   currentPeriodEnd   DateTime           @db.Timestamptz(6)
   createdAt          DateTime           @default(now()) @db.Timestamptz(6)

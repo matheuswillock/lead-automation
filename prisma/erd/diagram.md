@@ -6,6 +6,7 @@ erDiagram
 ACTIVE ACTIVE
 CANCELLED CANCELLED
 EXPIRED EXPIRED
+LIFETIME LIFETIME
         }
     
   "profiles" {
@@ -21,6 +22,7 @@ EXPIRED EXPIRED
   "subscriptions" {
     String id "🗝️"
     SubscriptionStatus status 
+    Boolean isLifetime 
     DateTime currentPeriodStart 
     DateTime currentPeriodEnd 
     DateTime createdAt 

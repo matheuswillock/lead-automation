@@ -310,7 +310,7 @@ export class AbacatePayService {
   }
 
   /**
-   * MÉTODO HELPER: Criar cobrança completa para subscription do Lead Generator
+   * MÉTODO HELPER: Criar cobrança completa para subscription do TheLeadsFy
    * (Cria cliente E cobrança em uma chamada)
    */
   static async createSubscriptionBilling(customer: CustomerData, metadata?: any) {

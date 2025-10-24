@@ -1,8 +1,8 @@
-# Integração AbacatePay - Lead Generator
+# Integração AbacatePay - TheLeadsFy
 
 ## 📋 Visão Geral
 
-Este documento descreve a integração completa do AbacatePay como gateway de pagamento PIX para o Lead Generator.
+Este documento descreve a integração completa do AbacatePay como gateway de pagamento PIX para o TheLeadsFy.
 
 ## 🔄 Fluxo de Pagamento Completo
 
@@ -309,7 +309,7 @@ console.error('Erro ao criar cobrança:', error)
 - Documentação: https://docs.abacatepay.com
 - Discord: https://discord.gg/abacatepay
 
-**Lead Generator:**
+**TheLeadsFy:**
 - Issues: GitHub repository
 - Email: contato@leadgenerator.com
 
