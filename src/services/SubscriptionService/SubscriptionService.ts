@@ -29,19 +29,28 @@ export class SubscriptionService {
   /**
    * Cria uma assinatura PENDING aguardando pagamento
    * Usada quando usuário se cadastra mas ainda não pagou
+   * 
+   * @param isLifetime - Se true, cria assinatura vitalícia (vendedores/parceiros)
    */
-  static async createPendingSubscription(profileId: string) {
+  static async createPendingSubscription(profileId: string, isLifetime = false) {
     const plan = await this.getProfessionalPlan()
     
     const now = new Date()
     const periodEnd = new Date()
-    periodEnd.setDate(periodEnd.getDate() + 30) // 30 dias após pagamento
+    
+    // Se for vitalícia, define data muito no futuro (100 anos)
+    if (isLifetime) {
+      periodEnd.setFullYear(periodEnd.getFullYear() + 100)
+    } else {
+      periodEnd.setDate(periodEnd.getDate() + 30) // 30 dias após pagamento
+    }
 
     const subscription = await prisma.subscription.create({
       data: {
         profileId,
         subscriptionPlanId: plan.id,
-        status: 'PENDING',
+        status: isLifetime ? 'LIFETIME' : 'PENDING',
+        isLifetime,
         currentPeriodStart: now,
         currentPeriodEnd: periodEnd,
       },
@@ -103,6 +112,7 @@ export class SubscriptionService {
 
   /**
    * Verifica se a assinatura está ativa e válida
+   * Assinaturas vitalícias (LIFETIME) são sempre válidas
    */
   static async isSubscriptionActive(profileId: string): Promise<boolean> {
     const subscription = await prisma.subscription.findUnique({
@@ -110,6 +120,13 @@ export class SubscriptionService {
     })
 
     if (!subscription) return false
+    
+    // Assinatura vitalícia sempre ativa
+    if (subscription.isLifetime || subscription.status === 'LIFETIME') {
+      return true
+    }
+    
+    // Verifica status e data de validade
     if (subscription.status !== 'ACTIVE') return false
 
     const now = new Date()
@@ -119,6 +136,7 @@ export class SubscriptionService {
   /**
    * Ativar uma assinatura pendente usando supabaseId
    * IMPORTANTE: Recebe supabaseId (UUID do Supabase Auth), não profileId
+   * Não ativa assinaturas vitalícias (já estão ativas)
    */
   static async activatePendingSubscription(supabaseId: string) {
     // 1. Buscar profile usando supabaseId
@@ -142,11 +160,16 @@ export class SubscriptionService {
       throw new Error('Assinatura não encontrada')
     }
 
+    // 3. Verificar se é vitalícia (não precisa ativar)
+    if (subscription.isLifetime || subscription.status === 'LIFETIME') {
+      return subscription
+    }
+
     if (subscription.status !== 'PENDING') {
       throw new Error(`Assinatura não está pendente. Status atual: ${subscription.status}`)
     }
 
-    // 3. Ativar subscription
+    // 4. Ativar subscription
     const now = new Date()
     const periodEnd = new Date()
     periodEnd.setDate(periodEnd.getDate() + 30) // 30 dias
@@ -212,6 +235,7 @@ export class SubscriptionService {
 
   /**
    * Renova assinatura (adiciona 30 dias)
+   * Não renova assinaturas vitalícias
    */
   static async renewSubscription(profileId: string) {
     const existing = await prisma.subscription.findUnique({
@@ -222,6 +246,11 @@ export class SubscriptionService {
       throw new Error('Assinatura não encontrada')
     }
 
+    // Assinatura vitalícia não precisa renovar
+    if (existing.isLifetime || existing.status === 'LIFETIME') {
+      return existing
+    }
+
     const newEnd = new Date(existing.currentPeriodEnd)
     newEnd.setDate(newEnd.getDate() + 30)
 
@@ -230,6 +259,103 @@ export class SubscriptionService {
       data: {
         status: 'ACTIVE',
         currentPeriodEnd: newEnd,
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
+    })
+  }
+
+  /**
+   * Cria assinatura vitalícia para vendedores/parceiros
+   * Assinatura sem necessidade de pagamento
+   */
+  static async createLifetimeSubscription(profileId: string) {
+    const plan = await this.getProfessionalPlan()
+    
+    const now = new Date()
+    const periodEnd = new Date()
+    periodEnd.setFullYear(periodEnd.getFullYear() + 100) // 100 anos no futuro
+
+    // Verificar se já existe subscription
+    const existing = await prisma.subscription.findUnique({
+      where: { profileId },
+    })
+
+    if (existing) {
+      // Atualizar para vitalícia
+      return prisma.subscription.update({
+        where: { profileId },
+        data: {
+          status: 'LIFETIME',
+          isLifetime: true,
+          currentPeriodStart: now,
+          currentPeriodEnd: periodEnd,
+        },
+        include: {
+          plan: true,
+          profile: true,
+        },
+      })
+    }
+
+    // Criar nova subscription vitalícia
+    return prisma.subscription.create({
+      data: {
+        profileId,
+        subscriptionPlanId: plan.id,
+        status: 'LIFETIME',
+        isLifetime: true,
+        currentPeriodStart: now,
+        currentPeriodEnd: periodEnd,
+      },
+      include: {
+        plan: true,
+        profile: true,
+      },
+    })
+  }
+
+  /**
+   * Verifica se usuário tem assinatura vitalícia
+   */
+  static async isLifetimeSubscription(profileId: string): Promise<boolean> {
+    const subscription = await prisma.subscription.findUnique({
+      where: { profileId },
+    })
+
+    if (!subscription) return false
+    
+    return subscription.isLifetime || subscription.status === 'LIFETIME'
+  }
+
+  /**
+   * Converte assinatura regular para vitalícia
+   * Usado para promover usuários a vendedores/parceiros
+   */
+  static async upgradeToLifetime(profileId: string) {
+    const existing = await prisma.subscription.findUnique({
+      where: { profileId },
+    })
+
+    if (!existing) {
+      throw new Error('Assinatura não encontrada')
+    }
+
+    if (existing.isLifetime) {
+      return existing // Já é vitalícia
+    }
+
+    const periodEnd = new Date()
+    periodEnd.setFullYear(periodEnd.getFullYear() + 100)
+
+    return prisma.subscription.update({
+      where: { profileId },
+      data: {
+        status: 'LIFETIME',
+        isLifetime: true,
+        currentPeriodEnd: periodEnd,
       },
       include: {
         plan: true,

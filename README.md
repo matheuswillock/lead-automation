@@ -17,6 +17,7 @@
 - 📊 **Extração Completa**: Nome, telefone, endereço, avaliações, horário de funcionamento
 - 📥 **Exportação Instantânea**: Download em CSV/Excel pronto para CRM
 - 💳 **Pagamento via PIX**: Sistema de assinatura mensal brasileiro (R$ 19,90)
+- 👑 **Assinaturas Vitalícias**: Acesso permanente para vendedores e parceiros da plataforma
 - 🎨 **Interface Moderna**: UX/UI otimizada e responsiva
 - ⚡ **Performance**: Resultados em tempo real
 
@@ -214,6 +215,9 @@ npm run prisma:seed      # Popula banco de dados
 - [Guia de Testes](./TESTING_GUIDE.md)
 - [Changelog AbacatePay](./CHANGELOG_ABACATEPAY.md)
 - [Branding Guidelines](./BRANDING.md)
+- [Sistema de Cores OKLCH](./COLOR_SYSTEM.md)
+- 👑 **[Sistema de Assinatura Vitalícia](./LIFETIME_SUBSCRIPTION.md)** ← Novo!
+- [Resumo da Implementação](./IMPLEMENTATION_SUMMARY.md)
 
 ---
 
