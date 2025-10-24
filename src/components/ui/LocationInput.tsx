@@ -2,7 +2,6 @@
 
 import { LocationData } from "@/domain/Dto/OutputLocations";
 import { useCallback, useEffect, useState } from "react";
-import { Input } from "./input";
 import { GetLocations } from "@/services/SerperService/Serper";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";

@@ -34,6 +34,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
+import { NavUser } from '../../components/nav-user';
 
 export default function Home() {
   const router = useRouter();
@@ -70,6 +71,8 @@ export default function Home() {
   );
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+
 
   // Verificar autenticação
   useEffect(() => {
@@ -146,30 +149,39 @@ export default function Home() {
     <div className="min-h-screen w-full bg-background text-foreground">
       {/* Header Fixo */}
       <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100 }}
-        className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      >
-        <nav className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Search className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <span className="text-xl font-bold">TheLeadsFy</span>
-            </motion.div>
-          </Link>
+          initial={{ y: -100 }}
+          animate={{ y: 0 }}
+          transition={{ type: "spring", stiffness: 100 }}
+          className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        >
+          <nav className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <Link href="/">
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-2 cursor-pointer"
+              >
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                  <Search className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <span className="text-xl font-bold">TheLeadsFy</span>
+              </motion.div>
+            </Link>
 
-          <ModeToggle />
-        </nav>
-      </motion.header>
+            <div className="flex items-center gap-2">
+              <ModeToggle />
+              <NavUser 
+                user={user ? {
+                  name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Usuário',
+                  email: user.email || '',
+                  avatar: user.user_metadata?.avatar_url || ''
+                } : null} 
+              />
+            </div>
+          </nav>
+        </motion.header>
 
-      {/* Conteúdo Principal */}
-      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        {/* Conteúdo Principal */}
+        <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
           {/* Alertas de Status */}
           {onboardingLoading && (
@@ -231,7 +243,10 @@ export default function Home() {
                 <Crown className="h-4 w-4" />
                 <AlertTitle>Assinatura expirada ou inativa</AlertTitle>
                 <AlertDescription className="flex items-center justify-between">
-                  <span>Sua assinatura não está ativa. Renove para continuar gerando leads por apenas R$ 19,90/mês.</span>
+                  <span>
+                    Sua assinatura não está ativa. Renove para continuar gerando
+                    leads por apenas R$ 19,90/mês.
+                  </span>
                   <Button variant="default" size="sm" className="ml-4" asChild>
                     <Link href="#pricing">Renovar agora</Link>
                   </Button>
@@ -250,28 +265,34 @@ export default function Home() {
                 <Crown className="h-4 w-4 text-primary" />
                 <AlertTitle>Período de teste ativado!</AlertTitle>
                 <AlertDescription>
-                  Você tem 7 dias de teste grátis. Aproveite para explorar todas as funcionalidades!
+                  Você tem 7 dias de teste grátis. Aproveite para explorar todas
+                  as funcionalidades!
                 </AlertDescription>
               </Alert>
             </motion.div>
           )}
 
-          {user && hasActiveSubscription && data?.subscription && !isNewUser && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
-              <Alert className="border-green-500">
-                <Crown className="h-4 w-4 text-green-500" />
-                <AlertTitle>Assinatura ativa</AlertTitle>
-                <AlertDescription>
-                  Sua assinatura Professional está ativa até{' '}
-                  {new Date(data.subscription.endsAt).toLocaleDateString('pt-BR')}
-                </AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
+          {user &&
+            hasActiveSubscription &&
+            data?.subscription &&
+            !isNewUser && (
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6"
+              >
+                <Alert className="border-green-500">
+                  <Crown className="h-4 w-4 text-green-500" />
+                  <AlertTitle>Assinatura ativa</AlertTitle>
+                  <AlertDescription>
+                    Sua assinatura Professional está ativa até{" "}
+                    {new Date(data.subscription.endsAt).toLocaleDateString(
+                      "pt-BR"
+                    )}
+                  </AlertDescription>
+                </Alert>
+              </motion.div>
+            )}
 
           {/* Título da Página */}
           <motion.div
@@ -383,7 +404,10 @@ export default function Home() {
                     <FileCheck2Icon />
                     <CardTitle>Resultados</CardTitle>
                   </div>
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
                     <Button
                       variant="secondary"
                       className="cursor-pointer hover:bg-primary/80 font-semibold"
@@ -406,7 +430,11 @@ export default function Home() {
                       <div className="flex items-center justify-center h-96">
                         <motion.div
                           animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
                         >
                           <Loader className="h-12 w-12 text-primary" />
                         </motion.div>
@@ -437,8 +465,8 @@ export default function Home() {
                           Aguardando geração
                         </h3>
                         <p className="max-w-xs">
-                          Os leads encontrados aparecerão aqui após você clicar em
-                          "Gerar Leads".
+                          Os leads encontrados aparecerão aqui após você clicar
+                          em "Gerar Leads".
                         </p>
                       </motion.div>
                     )}
