@@ -35,8 +35,8 @@ export default function Features() {
               </div>
               <h3 className="text-xl font-semibold mb-2">Busca Geográfica</h3>
               <p className="text-muted-foreground">
-                Encontre leads por localização precisa. Cidade, bairro ou região - 
-                você escolhe onde prospectar.
+                Encontre leads por localização precisa. Cidade, bairro ou região.
+                Você escolhe onde prospectar.
               </p>
             </Card>
           </motion.div>

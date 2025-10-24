@@ -66,11 +66,11 @@ Quando implementarmos o sistema de emails, usaremos:
 
 1. **Confirmação de Cadastro**
    ```
-   Assunto: Confirme seu email - Lead Generator
+   Assunto: Confirme seu email - TheLeadsFy
    
    Olá [Nome],
    
-   Bem-vindo ao Lead Generator!
+   Bem-vindo ao TheLeadsFy!
    
    Clique no link abaixo para confirmar seu email:
    [Botão: Confirmar Email]
@@ -81,7 +81,7 @@ Quando implementarmos o sistema de emails, usaremos:
 
 2. **Recuperação de Senha**
    ```
-   Assunto: Redefinir senha - Lead Generator
+   Assunto: Redefinir senha - TheLeadsFy
    
    Olá [Nome],
    

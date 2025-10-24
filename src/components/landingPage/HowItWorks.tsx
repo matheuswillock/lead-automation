@@ -26,7 +26,7 @@ export default function HowItWorks() {
               number: 1,
               title: "Defina sua Busca",
               description:
-                "Escolha localização e tipo de negócio. Foque no seu mercado ideal.",
+                "Escolha a localização e o tipo de negócio. Foque no seu mercado ideal.",
             },
             {
               number: 2,

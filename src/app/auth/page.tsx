@@ -23,7 +23,7 @@ export default function AuthPage() {
             <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
               <Search className="w-7 h-7 text-primary-foreground" />
             </div>
-            <span className="text-2xl font-bold">Lead Generator</span>
+            <span className="text-2xl font-bold">TheLeadsFy</span>
           </motion.div>
         </Link>
 

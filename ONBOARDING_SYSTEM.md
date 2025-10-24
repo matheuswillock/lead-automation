@@ -2,7 +2,7 @@
 
 ## 📋 Visão Geral
 
-Este documento descreve o sistema completo de onboarding e gerenciamento de assinaturas implementado no Lead Generator.
+Este documento descreve o sistema completo de onboarding e gerenciamento de assinaturas implementado no TheLeadsFy.
 
 ## 🏗️ Arquitetura
 

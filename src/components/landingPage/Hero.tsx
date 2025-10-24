@@ -39,7 +39,8 @@ export default function Hero()  {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight"
             >
-              <span className="text-primary">Leadify</span> your business
+              <span className="text-primary">Leads</span> for your{" "}
+              <span className="text-5xl sm:text-6xl lg:text-7xl">business</span>
               <br />
               <span className="text-2xl sm:text-3xl lg:text-4xl text-muted-foreground font-normal">
                 Leads certos, no lugar certo
@@ -52,9 +53,10 @@ export default function Hero()  {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="text-lg text-muted-foreground"
             >
-              Geração de leads B2B simplificada através de busca geográfica inteligente.
-              Encontre prospects qualificados por localização e tipo de negócio.
-              Extração rápida, dados completos, exportação instantânea.
+              Geração de leads B2B simplificada através de busca geográfica
+              inteligente. Encontre prospects qualificados por localização e
+              tipo de negócio. Extração rápida, dados completos, exportação
+              instantânea.
             </motion.p>
 
             <motion.div

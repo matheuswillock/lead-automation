@@ -12,8 +12,8 @@ export default function Footer() {
         >
           <IconPlatform />
           <p className="text-muted-foreground mb-6">
-            TheLeadsFy - Geração de leads B2B simplificada através de busca 
-            geográfica inteligente. Leads certos, no lugar certo.
+            A Geração de leads B2B simplificada através de busca 
+            geográfica inteligente. <br />Leads certos, no lugar certo.
           </p>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-muted-foreground">
             <p>© 2025 TheLeadsFy. Todos os direitos reservados.</p>
