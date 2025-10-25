@@ -67,6 +67,7 @@ export default function Home() {
   const [whatsappMessage, setWhatsappMessage] = useState<string>(
     `Olá! Tudo bem? 😊\n\nAqui é o Cheffia — uma solução moderna para gestão de pedidos e pagamentos em restaurantes!\n\nVocê consegue automatizar pedidos, integrar pagamentos via QR Code e muito mais.\n\nGostaria de saber mais? É só responder aqui. 🚀`
   );
+  const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -88,6 +89,25 @@ export default function Home() {
 
     return () => subscription.unsubscribe();
   }, [supabase]);
+
+  // Verificar se veio do checkout (pagamento recente)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const fromCheckout = urlParams.get('from_checkout');
+    
+    if (fromCheckout === 'true' && hasActiveSubscription) {
+      setShowSuccessBanner(true);
+      
+      // Esconder o banner após 10 segundos
+      const timer = setTimeout(() => {
+        setShowSuccessBanner(false);
+        // Limpar o parâmetro da URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }, 10000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [hasActiveSubscription]);
 
   const isGenerateDisabled =
   !country ||
@@ -189,22 +209,8 @@ export default function Home() {
       <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
           {/* Alertas de Status */}
-          {onboardingLoading && (
-            <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mb-6"
-            >
-              <Alert>
-                <Loader className="h-4 w-4 animate-spin" />
-                <AlertTitle>Carregando...</AlertTitle>
-                <AlertDescription>
-                  Verificando status da sua assinatura
-                </AlertDescription>
-              </Alert>
-            </motion.div>
-          )}
-
+          
+          {/* Erro de onboarding */}
           {onboardingError && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -219,6 +225,7 @@ export default function Home() {
             </motion.div>
           )}
 
+          {/* Usuário não autenticado */}
           {!user && !onboardingLoading && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -238,6 +245,7 @@ export default function Home() {
             </motion.div>
           )}
 
+          {/* Assinatura inativa ou expirada */}
           {user && !hasActiveSubscription && !onboardingLoading && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -253,51 +261,35 @@ export default function Home() {
                     leads por apenas R$ 19,90/mês.
                   </span>
                   <Button variant="default" size="sm" className="ml-4" asChild>
-                    <Link href="#pricing">Renovar agora</Link>
+                    <Link href="/checkout">Renovar agora</Link>
                   </Button>
                 </AlertDescription>
               </Alert>
             </motion.div>
           )}
 
-          {user && hasActiveSubscription && data?.subscription && isNewUser && (
+          {/* Sucesso: Assinatura recém ativada (vindo do checkout) */}
+          {user && hasActiveSubscription && showSuccessBanner && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
               className="mb-6"
             >
-              <Alert className="border-primary">
-                <Crown className="h-4 w-4 text-primary" />
-                <AlertTitle>Período de teste ativado!</AlertTitle>
-                <AlertDescription>
-                  Você tem 7 dias de teste grátis. Aproveite para explorar todas
-                  as funcionalidades!
+              <Alert className="border-green-500 bg-green-50 dark:bg-green-950/30">
+                <Crown className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <AlertTitle className="text-green-800 dark:text-green-200">
+                  🎉 Assinatura ativada com sucesso!
+                </AlertTitle>
+                <AlertDescription className="text-green-700 dark:text-green-300">
+                  Bem-vindo ao TheLeadsFy! Sua assinatura Professional está ativa até{" "}
+                  {data?.subscription?.currentPeriodEnd && 
+                    new Date(data.subscription.currentPeriodEnd).toLocaleDateString("pt-BR")
+                  }. Comece a gerar seus leads agora mesmo!
                 </AlertDescription>
               </Alert>
             </motion.div>
           )}
-
-          {user &&
-            hasActiveSubscription &&
-            data?.subscription &&
-            !isNewUser && (
-              <motion.div
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-6"
-              >
-                <Alert className="border-green-500">
-                  <Crown className="h-4 w-4 text-green-500" />
-                  <AlertTitle>Assinatura ativa</AlertTitle>
-                  <AlertDescription>
-                    Sua assinatura Professional está ativa até{" "}
-                    {new Date(data.subscription.endsAt).toLocaleDateString(
-                      "pt-BR"
-                    )}
-                  </AlertDescription>
-                </Alert>
-              </motion.div>
-            )}
 
           {/* Título da Página */}
           <motion.div
