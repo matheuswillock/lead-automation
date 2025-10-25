@@ -10,11 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
 import { useState, useEffect, useRef } from "react";
 import { BotMessageSquare, Loader, Search, AlertCircle, Crown, Clock } from "lucide-react";
-import { ModeToggle } from "@/components/ui/modeToggle";
 import { LocationInput } from "@/components/ui/LocationInput";
 import { MessageCircleMoreIcon } from "@/components/ui/message-circle-more";
 import { DownloadIcon } from "@/components/ui/download";
@@ -35,6 +32,7 @@ import { useOnboarding } from "@/hooks/useOnboarding";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { NavUser } from '../../components/nav-user';
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 export default function Home() {
   const router = useRouter();
@@ -182,8 +180,7 @@ export default function Home() {
                   : null
               }
             />
-
-            <ModeToggle />
+            <ThemeToggle />
           </div>
         </nav>
       </motion.header>

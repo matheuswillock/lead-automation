@@ -51,7 +51,7 @@ export function NavUser({
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="relative h-10 w-10 rounded-full"
+          className="relative h-10 w-10 rounded-full cursor-pointer"
         >
           <Avatar className="h-10 w-10">
             <AvatarImage src={user.avatar} alt={user.name || user.email} />

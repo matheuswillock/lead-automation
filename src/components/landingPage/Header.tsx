@@ -1,8 +1,8 @@
 import { motion } from "motion/react";
-import { ModeToggle } from "../ui/modeToggle";
 import Link from "next/dist/client/link";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
+import { ThemeToggle } from "../ui/theme-toggle";
 
 export default function Header() {
   return (
@@ -48,12 +48,12 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <ModeToggle />
           <Link href="/auth">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button className="cursor-pointer">Entrar</Button>
             </motion.div>
           </Link>
+          <ThemeToggle />
         </div>
       </nav>
     </motion.header>
