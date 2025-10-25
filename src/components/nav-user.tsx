@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   BadgeCheck,
   Bell,
@@ -22,6 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { AccountDialog } from "@/components/account-dialog";
 
 export function NavUser({
   user,
@@ -34,6 +36,9 @@ export function NavUser({
 }) {
   const router = useRouter();
   const supabase = createClient();
+  const [accountDialogOpen, setAccountDialogOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedTab, setSelectedTab] = useState<'account' | 'password' | 'subscription'>('account');
 
   // Se não há usuário, não renderiza nada
   if (!user) {
@@ -62,8 +67,25 @@ export function NavUser({
     }
   };
 
+  // Função para abrir o dialog e fechar o dropdown
+  const handleOpenAccountDialog = (tab: 'account' | 'password' | 'subscription' = 'account') => {
+    setSelectedTab(tab);
+    setDropdownOpen(false); // Fechar dropdown
+    setTimeout(() => {
+      setAccountDialogOpen(true); // Abrir dialog após dropdown fechar
+    }, 100);
+  };
+
   return (
-    <DropdownMenu>
+    <>
+      <AccountDialog 
+        open={accountDialogOpen} 
+        onOpenChange={setAccountDialogOpen}
+        defaultTab={selectedTab}
+        user={user}
+      />
+      
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
@@ -101,11 +123,17 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator /> */}
         <DropdownMenuGroup>
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem 
+            className="cursor-pointer"
+            onClick={() => handleOpenAccountDialog('account')}
+          >
             <BadgeCheck />
             Account
           </DropdownMenuItem>
-          <DropdownMenuItem className="cursor-pointer">
+          <DropdownMenuItem 
+            className="cursor-pointer"
+            onClick={() => handleOpenAccountDialog('subscription')}
+          >
             <CreditCard />
             Assinatura
           </DropdownMenuItem>
@@ -121,5 +149,6 @@ export function NavUser({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </>
   );
 }

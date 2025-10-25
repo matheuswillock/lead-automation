@@ -80,7 +80,25 @@ export async function GET(request: NextRequest) {
     const isActive = await SubscriptionService.isSubscriptionActive(profile.id)
 
     return NextResponse.json({
-      profile,
+      profile: {
+        id: profile.id,
+        supabaseId: profile.supabaseId,
+        username: profile.username,
+        avatarUrl: profile.avatarUrl,
+        createdAt: profile.createdAt,
+      },
+      subscription: profile.subscription ? {
+        id: profile.subscription.id,
+        status: profile.subscription.status,
+        isLifetime: (profile.subscription as any).isLifetime || false,
+        currentPeriodEnd: profile.subscription.currentPeriodEnd,
+        createdAt: (profile.subscription as any).createdAt,
+        plan: {
+          name: profile.subscription.plan.name,
+          price: profile.subscription.plan.price,
+          description: profile.subscription.plan.description,
+        },
+      } : null,
       subscriptionActive: isActive,
     })
 
