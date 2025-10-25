@@ -20,6 +20,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
 
 export function NavUser({
   user,
@@ -30,6 +32,9 @@ export function NavUser({
     avatar: string;
   } | null;
 }) {
+  const router = useRouter();
+  const supabase = createClient();
+
   // Se não há usuário, não renderiza nada
   if (!user) {
     return null;
@@ -44,6 +49,17 @@ export function NavUser({
       return user.email.substring(0, 2).toUpperCase();
     }
     return 'U';
+  };
+
+  // Função de logout
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/');
+      router.refresh();
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   return (
@@ -94,12 +110,12 @@ export function NavUser({
                 Billing
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Bell />
-                Notifications
+                {/* <Bell />
+                Notifications */}
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
               <LogOut />
               Log out
             </DropdownMenuItem>
