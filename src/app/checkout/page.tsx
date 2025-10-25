@@ -239,9 +239,9 @@ function CheckoutContent() {
             }),
           })
 
-          // Redirecionar para página de geração
+          // Redirecionar para página de geração com parâmetro indicando sucesso
           setTimeout(() => {
-            router.push('/generate')
+            router.push('/generate?from_checkout=true')
           }, 2000)
         }
       } catch (err) {

@@ -4,8 +4,28 @@ import { Search } from 'lucide-react'
 import Link from 'next/link'
 import { motion } from 'motion/react'
 import { LoginForm } from '@/components/loginForm'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 export default function AuthPage() {
+  const router = useRouter()
+  const supabase = createClient()
+
+  // Verificar se usuário já está logado
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // Se já está logado, redireciona para /generate
+        router.push('/generate')
+      }
+    }
+
+    checkAuth()
+  }, [router, supabase])
+
   return (
     <div className="min-h-screen w-full bg-background flex items-center justify-center p-4">
       <motion.div

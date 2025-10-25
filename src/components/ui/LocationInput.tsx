@@ -2,7 +2,6 @@
 
 import { LocationData } from "@/domain/Dto/OutputLocations";
 import { useCallback, useEffect, useState } from "react";
-import { Input } from "./input";
 import { GetLocations } from "@/services/SerperService/Serper";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
@@ -109,14 +108,14 @@ export function LocationInput({
   return (
     <div className="relative w-full">
       <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild className="w-full">
-          <div className="relative w-full">
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between pr-10"
-            >
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between h-9 px-3 py-1 font-normal text-left text-base md:text-sm"
+          >
+            <span className="truncate">
               {value
                 ? (() => {
                     const selected = selectedLocations.find(
@@ -140,11 +139,11 @@ export function LocationInput({
                     );
                   })()
                 : "Select location..."}
-              <ChevronsUpDown className="opacity-50" />
-            </Button>
-          </div>
+            </span>
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          </Button>
         </PopoverTrigger>
-        <PopoverContent align="start" className="w-full p-0">
+        <PopoverContent align="start" className="w-[var(--radix-popover-trigger-width)] p-0">
           <Command>
             <CommandInput
               placeholder={placeholder}

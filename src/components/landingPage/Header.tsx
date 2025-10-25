@@ -1,10 +1,45 @@
+'use client'
+
 import { motion } from "motion/react";
-import { ModeToggle } from "../ui/modeToggle";
 import Link from "next/dist/client/link";
 import { Button } from "../ui/button";
 import { Search } from "lucide-react";
+import { ThemeToggle } from "../ui/theme-toggle";
+import { createClient } from "@/lib/supabase/client";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
+  const router = useRouter();
+  const supabase = createClient();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setIsLoggedIn(!!user);
+    };
+
+    checkAuth();
+
+    // Listener para mudanças de autenticação
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session?.user);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
+
+  const handleAuthClick = () => {
+    if (isLoggedIn) {
+      // Se já está logado, vai para /generate
+      router.push('/generate');
+    } else {
+      // Se não está logado, vai para /auth
+      router.push('/auth');
+    }
+  };
+
   return (
     <motion.header
       initial={{ y: -100 }}
@@ -48,12 +83,16 @@ export default function Header() {
         </div>
 
         <div className="flex items-center gap-4">
-          <ModeToggle />
-          <Link href="/auth">
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Button className="cursor-pointer">Entrar</Button>
-            </motion.div>
-          </Link>
+          <motion.div 
+            whileHover={{ scale: 1.05 }} 
+            whileTap={{ scale: 0.95 }}
+            onClick={handleAuthClick}
+          >
+            <Button className="cursor-pointer">
+              {isLoggedIn ? 'Ir para Plataforma' : 'Entrar'}
+            </Button>
+          </motion.div>
+          <ThemeToggle />
         </div>
       </nav>
     </motion.header>
