@@ -134,6 +134,7 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
       setNewPassword('')
       setConfirmPassword('')
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, defaultTab])
 
   const loadProfileData = async () => {
