@@ -199,6 +199,11 @@ export default function Home() {
                     }
                   : null
               }
+              onAvatarUpdate={async () => {
+                // Recarregar dados do usuário após atualização do avatar
+                const { data: { user: updatedUser } } = await supabase.auth.getUser()
+                setUser(updatedUser)
+              }}
             />
             <ThemeToggle />
           </div>

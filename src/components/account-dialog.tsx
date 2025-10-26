@@ -41,6 +41,7 @@ interface AccountDialogProps {
     email: string
     avatar: string
   } | null
+  onAvatarUpdate?: () => void // Callback para atualizar avatar no componente pai
 }
 
 interface ProfileData {
@@ -65,7 +66,7 @@ interface ProfileData {
   }
 }
 
-export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user }: AccountDialogProps) {
+export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user, onAvatarUpdate }: AccountDialogProps) {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<ProfileData | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
@@ -334,11 +335,16 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
       
       toast.success('Foto de perfil atualizada com sucesso!')
       
-      // Recarregar dados para atualizar UI
+      // Pequeno delay para garantir que o Supabase atualizou
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Recarregar dados do perfil (sem reload da página)
       await loadProfileData()
       
-      // Forçar atualização da página para refletir novo avatar
-      window.location.reload()
+      // Notificar componente pai para atualizar avatar
+      if (onAvatarUpdate) {
+        onAvatarUpdate()
+      }
       
     } catch (error: any) {
       console.error('Erro ao atualizar avatar:', error)
@@ -388,11 +394,16 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
       
       toast.success('Foto de perfil removida com sucesso!')
       
-      // Recarregar dados
+      // Pequeno delay para garantir que o Supabase atualizou
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Recarregar dados (sem reload da página)
       await loadProfileData()
       
-      // Forçar atualização da página
-      window.location.reload()
+      // Notificar componente pai para atualizar avatar
+      if (onAvatarUpdate) {
+        onAvatarUpdate()
+      }
       
     } catch (error: any) {
       console.error('Erro ao remover avatar:', error)

@@ -27,12 +27,14 @@ import { AccountDialog } from "@/components/account-dialog";
 
 export function NavUser({
   user,
+  onAvatarUpdate,
 }: {
   user: {
     name: string;
     email: string;
     avatar: string;
   } | null;
+  onAvatarUpdate?: () => void;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -83,6 +85,7 @@ export function NavUser({
         onOpenChange={setAccountDialogOpen}
         defaultTab={selectedTab}
         user={user}
+        onAvatarUpdate={onAvatarUpdate}
       />
       
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
