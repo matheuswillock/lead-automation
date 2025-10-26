@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 import {
@@ -28,8 +28,9 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Calendar, Mail, CreditCard, Sparkles, CheckCircle2, Clock, XCircle, User, Lock, Eye, EyeOff, Edit2, Save, X as XIcon } from 'lucide-react'
+import { Calendar, Mail, CreditCard, Sparkles, CheckCircle2, Clock, XCircle, User, Lock, Eye, EyeOff, Edit2, Save, X as XIcon, Camera, Upload, Trash2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import { StorageService } from '@/services/StorageService/StorageService'
 
 interface AccountDialogProps {
   open: boolean
@@ -40,6 +41,7 @@ interface AccountDialogProps {
     email: string
     avatar: string
   } | null
+  onAvatarUpdate?: () => void // Callback para atualizar avatar no componente pai
 }
 
 interface ProfileData {
@@ -64,7 +66,7 @@ interface ProfileData {
   }
 }
 
-export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user }: AccountDialogProps) {
+export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user, onAvatarUpdate }: AccountDialogProps) {
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<ProfileData | null>(null)
   const [userEmail, setUserEmail] = useState<string>('')
@@ -85,6 +87,12 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [isSavingPassword, setIsSavingPassword] = useState(false)
+
+  // Estados para avatar
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatar || null)
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Função para limpar o bloqueio do body
   const cleanupBodyLock = () => {
@@ -133,9 +141,16 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
       setCurrentPassword('')
       setNewPassword('')
       setConfirmPassword('')
+      setAvatarPreview(null)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, defaultTab])
+
+  // Atualizar avatar URL quando user mudar
+  useEffect(() => {
+    // Se user.avatar existe, usar ele, senão null
+    setAvatarUrl(user?.avatar || null)
+  }, [user?.avatar])
 
   const loadProfileData = async () => {
     try {
@@ -258,6 +273,155 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
     }
   }
 
+  // Função para abrir seletor de arquivo
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  // Função para processar arquivo selecionado
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Validar arquivo
+    const validation = StorageService.validateImageFile(file)
+    if (!validation.valid) {
+      toast.error('Arquivo inválido', {
+        description: validation.error
+      })
+      return
+    }
+
+    try {
+      setIsUploadingAvatar(true)
+
+      // Criar preview local
+      const previewUrl = URL.createObjectURL(file)
+      setAvatarPreview(previewUrl)
+
+      // Buscar usuário autenticado
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) {
+        toast.error('Usuário não autenticado')
+        return
+      }
+
+      // Upload do arquivo
+      let newAvatarUrl: string | null = null
+      
+      // Verificar se existe avatar antigo válido
+      const hasOldAvatar = avatarUrl && avatarUrl.trim() !== '' && avatarUrl.includes('http')
+      
+      if (hasOldAvatar) {
+        // Se já existe avatar válido, atualizar (deleta antigo e faz upload do novo)
+        newAvatarUrl = await StorageService.updateAvatar(authUser.id, file, avatarUrl)
+      } else {
+        // Se não existe ou é inválido, fazer upload novo
+        newAvatarUrl = await StorageService.uploadAvatar(authUser.id, file)
+      }
+
+      if (!newAvatarUrl) {
+        throw new Error('Erro ao fazer upload da imagem')
+      }
+
+      // Atualizar metadata do usuário
+      const { error } = await supabase.auth.updateUser({
+        data: { avatar_url: newAvatarUrl }
+      })
+
+      if (error) throw error
+
+      // Atualizar estado local
+      setAvatarUrl(newAvatarUrl)
+      setAvatarPreview(null)
+      
+      toast.success('Foto de perfil atualizada com sucesso!')
+      
+      // Pequeno delay para garantir que o Supabase atualizou
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Recarregar dados do perfil (sem reload da página)
+      await loadProfileData()
+      
+      // Notificar componente pai para atualizar avatar
+      if (onAvatarUpdate) {
+        onAvatarUpdate()
+      }
+      
+    } catch (error: any) {
+      console.error('Erro ao atualizar avatar:', error)
+      toast.error('Erro ao atualizar foto de perfil', {
+        description: error.message
+      })
+      setAvatarPreview(null)
+    } finally {
+      setIsUploadingAvatar(false)
+      // Limpar input file
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  // Função para remover avatar
+  const handleRemoveAvatar = async () => {
+    // Verificar se existe avatar válido para remover
+    const hasValidAvatar = avatarUrl && avatarUrl.trim() !== '' && avatarUrl.includes('http')
+    if (!hasValidAvatar) {
+      toast.warning('Nenhuma foto de perfil para remover')
+      return
+    }
+
+    try {
+      setIsUploadingAvatar(true)
+
+      // Buscar usuário autenticado
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) {
+        toast.error('Usuário não autenticado')
+        return
+      }
+
+      // Deletar do storage
+      const deleted = await StorageService.deleteAvatarFromUrl(avatarUrl)
+      if (!deleted) {
+        console.warn('Não foi possível deletar o avatar do storage')
+      }
+
+      // Remover da metadata do usuário
+      const { error } = await supabase.auth.updateUser({
+        data: { avatar_url: null }
+      })
+
+      if (error) throw error
+
+      // Limpar estado local (usar null em vez de string vazia)
+      setAvatarUrl(null)
+      setAvatarPreview(null)
+      
+      toast.success('Foto de perfil removida com sucesso!')
+      
+      // Pequeno delay para garantir que o Supabase atualizou
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Recarregar dados (sem reload da página)
+      await loadProfileData()
+      
+      // Notificar componente pai para atualizar avatar
+      if (onAvatarUpdate) {
+        onAvatarUpdate()
+      }
+      
+    } catch (error: any) {
+      console.error('Erro ao remover avatar:', error)
+      toast.error('Erro ao remover foto de perfil', {
+        description: error.message
+      })
+    } finally {
+      setIsUploadingAvatar(false)
+    }
+  }
+
   const getInitials = () => {
     if (!user) return 'U'
     if (user.name && user.name !== 'shadcn') {
@@ -339,7 +503,7 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
         {/* Avatar e Info Básica */}
         <div className="flex flex-col items-center gap-4 py-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={user.avatar} alt={user.name || user.email} />
+            {user.avatar && <AvatarImage src={user.avatar} alt={user.name || user.email} />}
             <AvatarFallback className="text-xl">{getInitials()}</AvatarFallback>
           </Avatar>
           <div className="text-center">
@@ -398,6 +562,69 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
                   </div>
                 ) : data ? (
                   <>
+                    {/* Seção de Avatar */}
+                    <div className="flex flex-col items-center gap-4 p-4 rounded-lg border bg-muted/30">
+                      <div className="relative group">
+                        <Avatar className="h-24 w-24 border-4 border-background shadow-lg">
+                          {(avatarPreview || avatarUrl || user.avatar) && (
+                            <AvatarImage 
+                              src={avatarPreview || avatarUrl || user.avatar} 
+                              alt={user.name || user.email} 
+                            />
+                          )}
+                          <AvatarFallback className="text-2xl">{getInitials()}</AvatarFallback>
+                        </Avatar>
+                        {isUploadingAvatar && (
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                          </div>
+                        )}
+                        <button
+                          onClick={handleAvatarClick}
+                          disabled={isUploadingAvatar}
+                          className="absolute bottom-0 right-0 p-2 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                        >
+                          <Camera className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleAvatarClick}
+                          disabled={isUploadingAvatar}
+                        >
+                          <Upload className="w-4 h-4 mr-2" />
+                          {avatarUrl ? 'Alterar Foto' : 'Upload Foto'}
+                        </Button>
+                        
+                        {avatarUrl && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleRemoveAvatar}
+                            disabled={isUploadingAvatar}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Remover
+                          </Button>
+                        )}
+                      </div>
+                      
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                      
+                      <p className="text-xs text-center text-muted-foreground">
+                        JPG, PNG ou WEBP. Máximo 5MB.
+                      </p>
+                    </div>
+
                     <div className="grid gap-3">
                       <Label htmlFor="name">Nome</Label>
                       <Input 
