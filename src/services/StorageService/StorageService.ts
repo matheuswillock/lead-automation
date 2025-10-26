@@ -77,14 +77,27 @@ export class StorageService {
    */
   static async deleteAvatarFromUrl(avatarUrl: string): Promise<boolean> {
     try {
+      // Validar URL antes de processar
+      if (!avatarUrl || typeof avatarUrl !== 'string' || avatarUrl.trim() === '') {
+        console.warn('URL do avatar vazia ou inválida, pulando deleção')
+        return false
+      }
+
       const supabase = createClient()
       
       // Extrair o caminho do arquivo da URL
-      const url = new URL(avatarUrl)
+      let url: URL
+      try {
+        url = new URL(avatarUrl)
+      } catch (urlError) {
+        console.warn('URL mal formatada, pulando deleção:', avatarUrl)
+        return false
+      }
+      
       const pathParts = url.pathname.split(`/${this.bucketName}/`)
       
       if (pathParts.length < 2) {
-        console.error('URL inválida')
+        console.warn('URL não contém caminho válido do bucket:', avatarUrl)
         return false
       }
 

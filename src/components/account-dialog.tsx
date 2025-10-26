@@ -89,7 +89,7 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
   const [isSavingPassword, setIsSavingPassword] = useState(false)
 
   // Estados para avatar
-  const [avatarUrl, setAvatarUrl] = useState<string>(user?.avatar || '')
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatar || null)
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -148,9 +148,8 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
 
   // Atualizar avatar URL quando user mudar
   useEffect(() => {
-    if (user?.avatar) {
-      setAvatarUrl(user.avatar)
-    }
+    // Se user.avatar existe, usar ele, senão null
+    setAvatarUrl(user?.avatar || null)
   }, [user?.avatar])
 
   const loadProfileData = async () => {
@@ -310,11 +309,14 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
       // Upload do arquivo
       let newAvatarUrl: string | null = null
       
-      if (avatarUrl) {
-        // Se já existe avatar, atualizar
+      // Verificar se existe avatar antigo válido
+      const hasOldAvatar = avatarUrl && avatarUrl.trim() !== '' && avatarUrl.includes('http')
+      
+      if (hasOldAvatar) {
+        // Se já existe avatar válido, atualizar (deleta antigo e faz upload do novo)
         newAvatarUrl = await StorageService.updateAvatar(authUser.id, file, avatarUrl)
       } else {
-        // Se não existe, fazer upload novo
+        // Se não existe ou é inválido, fazer upload novo
         newAvatarUrl = await StorageService.uploadAvatar(authUser.id, file)
       }
 
@@ -363,7 +365,12 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
 
   // Função para remover avatar
   const handleRemoveAvatar = async () => {
-    if (!avatarUrl) return
+    // Verificar se existe avatar válido para remover
+    const hasValidAvatar = avatarUrl && avatarUrl.trim() !== '' && avatarUrl.includes('http')
+    if (!hasValidAvatar) {
+      toast.warning('Nenhuma foto de perfil para remover')
+      return
+    }
 
     try {
       setIsUploadingAvatar(true)
@@ -388,8 +395,8 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
 
       if (error) throw error
 
-      // Limpar estado local
-      setAvatarUrl('')
+      // Limpar estado local (usar null em vez de string vazia)
+      setAvatarUrl(null)
       setAvatarPreview(null)
       
       toast.success('Foto de perfil removida com sucesso!')

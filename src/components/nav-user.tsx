@@ -95,7 +95,7 @@ export function NavUser({
           className="relative h-10 w-10 rounded-full cursor-pointer"
         >
           <Avatar className="h-10 w-10">
-            <AvatarImage src={user.avatar} alt={user.name || user.email} />
+            {user.avatar && <AvatarImage src={user.avatar} alt={user.name || user.email} />}
             <AvatarFallback>{getInitials()}</AvatarFallback>
           </Avatar>
         </Button>
@@ -104,7 +104,7 @@ export function NavUser({
         <DropdownMenuLabel className="p-0 font-normal">
           <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
             <Avatar className="h-8 w-8 rounded-lg">
-              <AvatarImage src={user.avatar} alt={user.name || user.email} />
+              {user.avatar && <AvatarImage src={user.avatar} alt={user.name || user.email} />}
               <AvatarFallback className="rounded-lg">
                 {getInitials()}
               </AvatarFallback>

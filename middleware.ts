@@ -16,6 +16,12 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
+  // Skip middleware for auth routes (login, callback, register)
+  if (pathname.startsWith('/auth') || pathname === '/register') {
+    console.info('[middleware] Auth route - skipping middleware');
+    return NextResponse.next();
+  }
+  
   // Always refresh Supabase session cookies via helper
   const { user, response } = await updateSession(request)
 
