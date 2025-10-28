@@ -64,9 +64,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Cobrança PIX criada com sucesso: ', JSON.stringify(paymentQrCodeResponse.data))
-
-
     // Retornar dados da cobrança (incluindo QR Code PIX)
     return NextResponse.json({
       success: true,

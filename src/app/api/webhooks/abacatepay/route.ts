@@ -45,41 +45,6 @@ interface AbacatePayWebhookPayment {
   method: string
 }
 
-/*
-  {
-	"id": "evt_0HXQYtBYABLRyBc04QnuYJ22",
-	"event": "billing.paid",
-	"data": {
-		"pixQrCode": {
-			"id": "pix_char_KBBxmM6ZHMyy2rdSTEPCcUuJ",
-			"customer": {
-				"id": "cust_D5MFKH1PEmYrzMj1can6r6DZ",
-				"metadata": {
-					"name": "Cheffia",
-					"cellphone": "11983709790",
-					"taxId": "44619349852",
-					"email": "cheffia.tech@gmail.com",
-					"zipCode": ""
-				}
-			},
-			"amount": 1990,
-			"kind": "PIX",
-			"status": "PAID",
-			"metadata": {
-				"externalId": "71e3f0e4-ed92-4f1a-b2d9-01cf99045d81"
-			}
-		},
-		"payment": {
-			"amount": 1990,
-			"fee": 80,
-			"method": "PIX"
-		}
-	},
-	"devMode": true
-}
-
-*/
-
 /**
  * Webhook da AbacatePay para notificações de pagamento
  * 
@@ -93,9 +58,6 @@ export async function POST(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const webhookSecret = searchParams.get('webhookSecret');
     const body: AbacatePayWebhookPaidBody = await request.json();
-
-    console.log('Recebido webhook AbacatePay:', JSON.stringify(body, null, 2));
-    console.log('Webhook Secret recebido:', webhookSecret);
 
     // Validar webhookSecret enviado como parâmetro na URL
     if (!validateWebhookSecret(webhookSecret)) {

@@ -34,13 +34,7 @@ export async function GET(request: Request) {
     )
     
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
-    
-    console.log('🔐 OAuth Callback:', {
-      hasUser: !!data?.user,
-      provider: data?.user?.app_metadata?.provider,
-      error: error?.message
-    })
-    
+        
     if (!error && data.user) {
       // Verificar se é login via OAuth (Google)
       const isOAuthUser = data.user.app_metadata.provider === 'google'
@@ -84,7 +78,6 @@ export async function GET(request: Request) {
           })
           
           const onboardingData = await onboardingResponse.json()
-          console.log('📝 Onboarding response:', onboardingData)
         } catch (err) {
           console.error('❌ Erro ao criar profile:', err)
         }
@@ -100,13 +93,6 @@ export async function GET(request: Request) {
         if (profileResponse.ok) {
           const profileData = await profileResponse.json()
           
-          console.log('💳 Subscription status:', {
-            userId: data.user.id,
-            profileId: profileData.profile?.id,
-            subscriptionActive: profileData.subscriptionActive,
-            subscriptionStatus: profileData.subscription?.status
-          })
-          
           // Se tem subscription ativa, vai direto para generate
           if (profileData.subscriptionActive) {
             redirectTo = '/generate'
@@ -117,7 +103,6 @@ export async function GET(request: Request) {
         // Em caso de erro, manter o padrão (checkout)
       }
       
-      console.log('✅ Redirecting to:', redirectTo)
       return NextResponse.redirect(`${origin}${redirectTo}`)
     }
   }
