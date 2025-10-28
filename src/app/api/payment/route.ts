@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
           cellphone: customer.cellphone,
           email: customer.email,
           taxId: customer.taxId,
+          profileId: profile.id,
         },
         metadata: {
           externalId: profile.id,

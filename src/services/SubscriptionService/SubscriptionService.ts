@@ -166,7 +166,7 @@ export class SubscriptionService {
     }
 
     if (subscription.status !== 'PENDING') {
-      throw new Error(`Assinatura não está pendente. Status atual: ${subscription.status}`)
+      return subscription
     }
 
     // 4. Ativar subscription

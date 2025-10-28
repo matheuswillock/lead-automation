@@ -1,6 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
 import { ProfileService } from '@/services/ProfileService/ProfileService'
+import crypto from 'crypto'
+import { stringFromBase64URL } from '@supabase/ssr';
+import { stringify } from 'querystring';
+
+interface AbacatePayWebhookPaidBody {
+  id: string
+  event: string
+  data: AbacatePayWebhookPaidData
+  devMode: boolean
+}
+
+interface AbacatePayWebhookPaidData {
+  pixQrCode: {
+    id: string
+    customer: AbacatePayWebhookCustomer
+    amount: number
+    kind: string
+    status: string
+    metadata: {
+      externalId: string
+    }
+  },
+  payment: AbacatePayWebhookPayment
+}
+
+interface AbacatePayWebhookCustomer {
+  id: string,
+  metadata: AbacatePayWebhookCustomerMetadata
+}
+
+interface AbacatePayWebhookCustomerMetadata {
+  name: string,
+  cellphone: string,
+  taxId: string,
+  email: string,
+  zipCode: string  
+}
+
+interface AbacatePayWebhookPayment {
+  amount: number,
+  fee: number,
+  method: string
+}
 
 /**
  * Webhook da AbacatePay para notificações de pagamento
@@ -12,64 +55,62 @@ import { ProfileService } from '@/services/ProfileService/ProfileService'
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    
+    const { searchParams } = new URL(request.url);
+    const webhookSecret = searchParams.get('webhookSecret');
+    const body: AbacatePayWebhookPaidBody = await request.json();
 
-    const { event, data } = body
+    // Validar webhookSecret enviado como parâmetro na URL
+    if (!validateWebhookSecret(webhookSecret)) {
+      return NextResponse.json({ error: 'Invalid webhook secret' }, { status: 401 });
+    }
 
-    // TODO: Validar webhook (em produção, verificar assinatura)
-    // const signature = request.headers.get('x-abacatepay-signature')
-    // if (!validateSignature(signature, body)) {
-    //   return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-    // }
+    const { event, data } = body;
 
     switch (event) {
       case 'billing.paid':
-        await handleBillingPaid(data)
-        break
-      
+        await handleBillingPaid(data);
+        break;
+
       case 'billing.refunded':
-        await handleBillingRefunded(data)
-        break
-      
+        await handleBillingRefunded(data);
+        break;
+
       case 'billing.expired':
-        await handleBillingExpired(data)
-        break
-      
+        await handleBillingExpired(data);
+        break;
+
       default:
         // Evento não tratado - apenas registrar
-        console.warn('Evento não tratado:', event)
+        console.warn('Evento não tratado:', event);
     }
 
-    return NextResponse.json({ received: true })
-
+    return NextResponse.json({ received: true });
   } catch (error: any) {
-    console.error('Erro ao processar webhook:', error)
+    console.error('Erro ao processar webhook:', error);
     return NextResponse.json(
       { error: 'Erro ao processar webhook', details: error.message },
       { status: 500 }
-    )
+    );
   }
 }
 
 /**
  * Processa pagamento confirmado
  */
-async function handleBillingPaid(data: any) {
+async function handleBillingPaid(body: AbacatePayWebhookPaidData) {
   try {
-    const { metadata, id: billingId } = data
-    const { profileId } = metadata
+    const { externalId } = body.pixQrCode.metadata;
 
-    if (!profileId) {
-      console.error('profileId não encontrado no metadata')
+    if (!externalId) {
+      console.error('externalId não encontrado no metadata')
       return
     }
 
     // Buscar profile
-    const profile = await ProfileService.getProfileById(profileId)
+    const profile = await ProfileService.getProfileById(externalId)
     
     if (!profile) {
-      console.error('Profile não encontrado:', profileId)
+      console.error('Profile não encontrado:', externalId)
       return
     }
 
@@ -139,4 +180,11 @@ async function handleBillingExpired(data: any) {
     console.error('Erro ao processar expiração:', error)
     throw error
   }
+}
+
+function validateWebhookSecret(webhookSecret: string | null): boolean {
+  if (!webhookSecret) return false;
+
+  const secret = process.env.ABACATEPAY_WEBHOOK_SECRET!;
+  return webhookSecret === secret;
 }

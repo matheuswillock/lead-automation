@@ -3,8 +3,6 @@ import { SubscriptionService } from "@/services/SubscriptionService/Subscription
 export async function POST(request: Request) {
   const { profileId } = await request.json()
 
-  // NOTA: profileId aqui é na verdade o supabaseId (UUID do Supabase Auth)
-  // O método activatePendingSubscription busca o profile correto internamente
   const result = await SubscriptionService.activatePendingSubscription(profileId)
 
   if (!result) {

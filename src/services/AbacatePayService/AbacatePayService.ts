@@ -183,6 +183,7 @@ export class AbacatePayService {
       cellphone: string
       email: string
       taxId: string
+      profileId: string
     }
     metadata: {
       externalId: string
