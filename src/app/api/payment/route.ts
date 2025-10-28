@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
           cellphone: customer.cellphone,
           email: customer.email,
           taxId: customer.taxId,
+          profileId: profile.id,
         },
         metadata: {
           externalId: profile.id,
@@ -62,6 +63,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    console.log('Cobrança PIX criada com sucesso: ', JSON.stringify(paymentQrCodeResponse.data))
+
 
     // Retornar dados da cobrança (incluindo QR Code PIX)
     return NextResponse.json({
