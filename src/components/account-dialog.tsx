@@ -862,7 +862,7 @@ export function AccountDialog({ open, onOpenChange, defaultTab = 'account', user
                           <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50">
                             <CreditCard className="w-4 h-4 text-muted-foreground" />
                             <span className="text-sm">
-                              R$ {(data.subscription.plan.price / 100).toFixed(2)}/mês via PIX
+                              R$ 19,90/mês via PIX
                             </span>
                           </div>
                         </div>
