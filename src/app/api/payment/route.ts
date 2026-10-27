@@ -1,39 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
-import { ProfileService } from '@/services/ProfileService/ProfileService'
 import { AbacatePayService } from '@/services/AbacatePayService/AbacatePayService'
+import { getAuthenticatedProfile } from '@/lib/supabase/authenticated-profile'
+import { z } from 'zod'
+
+const paymentBodySchema = z.object({
+  customer: z.object({
+    name: z.string().trim().min(1),
+    email: z.string().email(),
+    cellphone: z.string().trim().min(1),
+    taxId: z.string().trim().min(1),
+  }),
+})
 
 /**
  * API para processar pagamento via AbacatePay (PIX)
  */
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { supabaseId, customer } = body
-
-    if (!supabaseId) {
-      return NextResponse.json(
-        { error: 'supabaseId é obrigatório' },
-        { status: 400 }
-      )
-    }
-
-    if (!customer || !customer.name || !customer.email) {
-      return NextResponse.json(
-        { error: 'Dados do cliente são obrigatórios (name, email)' },
-        { status: 400 }
-      )
-    }
-
-    // Buscar perfil
-    const profile = await ProfileService.getProfileBySupabaseId(supabaseId)
-
-    if (!profile) {
-      return NextResponse.json(
-        { error: 'Perfil não encontrado' },
-        { status: 404 }
-      )
-    }
+    const body = paymentBodySchema.parse(await request.json())
+    const { customer } = body
+    const profile = await getAuthenticatedProfile()
+    if (!profile) return NextResponse.json({ error: 'Não autenticado ou perfil não encontrado' }, { status: 401 })
 
     // Buscar plano
     const plan = await SubscriptionService.getProfessionalPlan()
@@ -73,8 +61,11 @@ export async function POST(request: NextRequest) {
 
   } catch (error: any) {
     console.error('Erro ao processar pagamento:', error)
+    if (error instanceof z.ZodError) {
+      return NextResponse.json({ error: 'Dados de pagamento inválidos' }, { status: 400 })
+    }
     return NextResponse.json(
-      { error: 'Erro ao processar pagamento', details: error.message },
+      { error: 'Erro ao processar pagamento' },
       { status: 500 }
     )
   }
@@ -86,8 +77,9 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const supabaseId = searchParams.get('supabaseId')
     const billingId = searchParams.get('billingId')
+    const profile = await getAuthenticatedProfile()
+    if (!profile) return NextResponse.json({ error: 'Não autenticado ou perfil não encontrado' }, { status: 401 })
 
     if (billingId) {
       // Verificar status do QR Code PIX na AbacatePay
@@ -100,23 +92,17 @@ export async function GET(request: NextRequest) {
         )
       }
 
+      if (result.data.metadata?.externalId !== profile.id) {
+        return NextResponse.json({ error: 'Cobrança não pertence ao usuário autenticado' }, { status: 403 })
+      }
+
       return NextResponse.json({
         billing: result.data,
         isPaid: result.data.status === 'PAID',
       })
     }
 
-    if (supabaseId) {
-      // Verificar subscription do usuário
-      const profile = await ProfileService.getProfileBySupabaseId(supabaseId)
-
-      if (!profile) {
-        return NextResponse.json(
-          { error: 'Perfil não encontrado' },
-          { status: 404 }
-        )
-      }
-
+    if (!billingId) {
       const subscription = await SubscriptionService.getSubscriptionByProfileId(profile.id)
 
       return NextResponse.json({
@@ -127,14 +113,14 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'supabaseId ou billingId é obrigatório' },
+      { error: 'billingId é obrigatório' },
       { status: 400 }
     )
 
   } catch (error: any) {
     console.error('Erro ao verificar pagamento:', error)
     return NextResponse.json(
-      { error: 'Erro ao verificar pagamento', details: error.message },
+      { error: 'Erro ao verificar pagamento' },
       { status: 500 }
     )
   }

@@ -1,21 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ProfileService } from '@/services/ProfileService/ProfileService'
 import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
+import { getAuthenticatedProfile, getAuthenticatedUser } from '@/lib/supabase/authenticated-profile'
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { supabaseId, username, avatarUrl, email } = body
-
-    if (!supabaseId) {
-      return NextResponse.json(
-        { error: 'supabaseId é obrigatório' },
-        { status: 400 }
-      )
-    }
+    const { username, avatarUrl, email } = body
+    const user = await getAuthenticatedUser()
+    if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
 
     // Verificar se o usuário já existe
-    const existingProfile = await ProfileService.getProfileBySupabaseId(supabaseId)
+    const existingProfile = await ProfileService.getProfileBySupabaseId(user.id)
 
     if (existingProfile) {
       return NextResponse.json({
@@ -27,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Criar novo perfil
     const profile = await ProfileService.createProfile({
-      supabaseId,
+      supabaseId: user.id,
       username: username || email?.split('@')[0],
       avatarUrl,
     })
@@ -49,7 +45,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Erro ao fazer onboarding:', error)
     return NextResponse.json(
-      { error: 'Erro ao criar usuário', details: error.message },
+      { error: 'Erro ao criar usuário' },
       { status: 500 }
     )
   }
@@ -57,22 +53,12 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const supabaseId = searchParams.get('supabaseId')
-
-    if (!supabaseId) {
-      return NextResponse.json(
-        { error: 'supabaseId é obrigatório' },
-        { status: 400 }
-      )
-    }
-
-    const profile = await ProfileService.getProfileBySupabaseId(supabaseId)
+    const profile = await getAuthenticatedProfile()
 
     if (!profile) {
       return NextResponse.json(
-        { error: 'Perfil não encontrado' },
-        { status: 404 }
+        { error: 'Não autenticado ou perfil não encontrado' },
+        { status: 401 }
       )
     }
 
@@ -105,7 +91,7 @@ export async function GET(request: NextRequest) {
   } catch (error: any) {
     console.error('Erro ao buscar perfil:', error)
     return NextResponse.json(
-      { error: 'Erro ao buscar perfil', details: error.message },
+      { error: 'Erro ao buscar perfil' },
       { status: 500 }
     )
   }

@@ -2,6 +2,8 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import { StorageService } from '@/services/StorageService/StorageService'
 import { cookies } from 'next/headers'
+import { ProfileService } from '@/services/ProfileService/ProfileService'
+import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -65,19 +67,18 @@ export async function GET(request: Request) {
           }
         }
 
-        // Criar profile no onboarding se for novo usuário
+        // Criar o profile diretamente: um fetch server-to-server não encaminha
+        // automaticamente os cookies recém-criados pela troca OAuth.
         try {
-          const onboardingResponse = await fetch(`${origin}/api/onboarding`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+          const existingProfile = await ProfileService.getProfileBySupabaseId(data.user.id)
+          if (!existingProfile) {
+            const profile = await ProfileService.createProfile({
               supabaseId: data.user.id,
-            }),
-          })
-          
-          const onboardingData = await onboardingResponse.json()
+              username: data.user.user_metadata?.user_name || data.user.email?.split('@')[0],
+              avatarUrl: data.user.user_metadata?.avatar_url,
+            })
+            await SubscriptionService.createPendingSubscription(profile.id)
+          }
         } catch (err) {
           console.error('❌ Erro ao criar profile:', err)
         }
@@ -87,16 +88,9 @@ export async function GET(request: Request) {
       let redirectTo = '/checkout' // Padrão: checkout
       
       try {
-        // Buscar profile e subscription status pelo supabaseId
-        const profileResponse = await fetch(`${origin}/api/onboarding?supabaseId=${data.user.id}`)
-        
-        if (profileResponse.ok) {
-          const profileData = await profileResponse.json()
-          
-          // Se tem subscription ativa, vai direto para generate
-          if (profileData.subscriptionActive) {
-            redirectTo = '/generate'
-          }
+        const profile = await ProfileService.getProfileBySupabaseId(data.user.id)
+        if (profile && await SubscriptionService.isSubscriptionActive(profile.id)) {
+          redirectTo = '/generate'
         }
       } catch (err) {
         console.error('❌ Erro ao verificar subscription:', err)

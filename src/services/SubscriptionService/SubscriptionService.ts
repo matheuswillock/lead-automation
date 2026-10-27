@@ -79,6 +79,13 @@ export class SubscriptionService {
     })
 
     if (existing) {
+      if (existing.status === 'ACTIVE' || existing.status === 'LIFETIME' || existing.isLifetime) {
+        return prisma.subscription.findUnique({
+          where: { profileId },
+          include: { plan: true, profile: true },
+        })
+      }
+
       // Atualizar subscription existente
       return prisma.subscription.update({
         where: { profileId },

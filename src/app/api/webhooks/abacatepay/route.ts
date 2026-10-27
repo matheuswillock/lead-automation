@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
 import { ProfileService } from '@/services/ProfileService/ProfileService'
-import crypto from 'crypto'
-import { stringFromBase64URL } from '@supabase/ssr';
-import { stringify } from 'querystring';
+import { z } from 'zod'
+
+const webhookSchema = z.object({
+  event: z.string().min(1),
+  data: z.record(z.string(), z.unknown()),
+})
 
 interface AbacatePayWebhookPaidBody {
   id: string
@@ -57,12 +60,17 @@ export async function POST(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const webhookSecret = searchParams.get('webhookSecret');
-    const body: AbacatePayWebhookPaidBody = await request.json();
+    const parsedBody = webhookSchema.safeParse(await request.json());
 
     // Validar webhookSecret enviado como parâmetro na URL
     if (!validateWebhookSecret(webhookSecret)) {
       return NextResponse.json({ error: 'Invalid webhook secret' }, { status: 401 });
     }
+
+    if (!parsedBody.success) {
+      return NextResponse.json({ error: 'Payload inválido' }, { status: 400 });
+    }
+    const body = parsedBody.data as unknown as AbacatePayWebhookPaidBody;
 
     const { event, data } = body;
 
@@ -88,7 +96,7 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Erro ao processar webhook:', error);
     return NextResponse.json(
-      { error: 'Erro ao processar webhook', details: error.message },
+      { error: 'Erro ao processar webhook' },
       { status: 500 }
     );
   }
@@ -147,7 +155,7 @@ async function handleBillingRefunded(data: any) {
       return
     }
 
-    await SubscriptionService.cancelSubscription(profile.subscription.id)
+    await SubscriptionService.cancelSubscription(profile.id)
 
     // TODO: Enviar email de notificação
     // await EmailService.sendSubscriptionRefunded(profile.email)
