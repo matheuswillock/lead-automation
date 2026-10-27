@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState, useEffect, useRef } from "react";
 import { BotMessageSquare, Loader, Search, AlertCircle, Crown, Clock } from "lucide-react";
-import { LocationInput } from "@/components/ui/LocationInput";
 import { MessageCircleMoreIcon } from "@/components/ui/message-circle-more";
 import { DownloadIcon } from "@/components/ui/download";
 import { SearchIcon } from "@/components/ui/search";
@@ -20,7 +19,7 @@ import { FileCheck2Icon } from "@/components/ui/file-check-2";
 import { MapPinIcon } from "@/components/ui/map-pin";
 import { MapPinHouseIcon } from "@/components/ui/map-pin-house";
 import { MainProps } from "@/app/api/useCases/generateLeads";
-import { InputSerper } from "@/services/SerperService/Serper";
+import { InputSerper, MAX_SERPER_PAGES } from "@/services/SerperService/Serper";
 import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
 import { Output } from "@/domain/Output";
 import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
@@ -56,10 +55,10 @@ export default function Home() {
     }
   }, [data, router]);
 
-  const [country, setCountry] = useState<string>("");
-  const [countryCode, setCountryCode] = useState<string>("BR");
+  const [countryCode, setCountryCode] = useState<string>("br");
   const [location, setLocation] = useState<string>("");
   const [leadType, setLeadType] = useState<string>("");
+  const [pagesToFetch, setPagesToFetch] = useState<number>(1);
   const [sendToWhatsApp, setSendToWhatsApp] = useState<boolean>(true);
   const [searchLeads, setSearchLeads] = useState<OutputSearchLead | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -110,12 +109,14 @@ export default function Home() {
   }, [hasActiveSubscription]);
 
   const isGenerateDisabled =
-  !country ||
   !location ||
   !leadType ||
-  country.trim().length <= 3 ||
+  !/^[a-z]{2}$/i.test(countryCode) ||
   location.trim().length <= 3 ||
   leadType.trim().length <= 3 ||
+  !Number.isInteger(pagesToFetch) ||
+  pagesToFetch < 1 ||
+  pagesToFetch > MAX_SERPER_PAGES ||
   !hasActiveSubscription ||
   onboardingLoading;
 
@@ -129,7 +130,7 @@ export default function Home() {
 
   const mainProps: MainProps = {
     input,
-    lastPage: 10,
+    lastPage: pagesToFetch,
   };
 
   const handleGenerateLeads = async () => {
@@ -146,8 +147,10 @@ export default function Home() {
         body: JSON.stringify(mainProps),
       });
       const data: Output | any = await res.json();
-      if ((!res.ok || !data.isValid)) {
-        console.error("Erro ao gerar leads:", data.error);
+      if (!res.ok || !data?.isValid || !data.result?.leads) {
+        console.error("Erro ao gerar leads:", data?.errorMessages ?? data?.error);
+        setSearchLeads(null);
+        return;
       }
       setSearchLeads(data.result.leads);
     } catch (err) {
@@ -326,36 +329,47 @@ export default function Home() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label>País</Label>
-                    <LocationInput
-                      placeholder="Select location..."
-                      onLocationSelect={(location) => {
-                        setCountry(location.canonicalName ?? "");
-                        setCountryCode(location.countryCode ?? "");
-                      }}
-                      initialValue={country}
-                      filterType="Country"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Localização</Label>
-                    <LocationInput
-                      placeholder="Select location..."
-                      onLocationSelect={(location) => {
-                        setLocation(location.canonicalName ?? "");
-                        setCountryCode(location.countryCode ?? "");
-                      }}
-                      initialValue={location}
-                      filterType="City"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Tipo de Lead</Label>
+                    <Label htmlFor="country-code">País (código ISO de 2 letras)</Label>
                     <Input
+                      id="country-code"
+                      placeholder="br"
+                      value={countryCode}
+                      maxLength={2}
+                      onChange={(event) => setCountryCode(event.target.value.toLowerCase())}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="search-location">Localização</Label>
+                    <Input
+                      id="search-location"
+                      placeholder="Ex.: Jundiaí, SP, Brasil"
+                      value={location}
+                      onChange={(event) => setLocation(event.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="lead-type">Tipo de Lead</Label>
+                    <Input
+                      id="lead-type"
                       placeholder="Ex: Pizzaria"
                       value={leadType}
                       onChange={(e) => setLeadType(e.target.value)}
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="pages-to-fetch">Páginas (até 10 resultados por página)</Label>
+                    <Input
+                      id="pages-to-fetch"
+                      type="number"
+                      min={1}
+                      max={MAX_SERPER_PAGES}
+                      step={1}
+                      value={pagesToFetch}
+                      onChange={(event) => setPagesToFetch(Number(event.target.value))}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Cada página pode consumir 1 crédito Serper. Use 1 página para um teste pequeno.
+                    </p>
                   </div>
                 </CardContent>
                 <CardFooter>

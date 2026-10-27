@@ -46,27 +46,27 @@ export default class OutputSearchLead {
 
 export class SearchParameters {
   q: string;
-  gl: string;
-  hl: string;
-  uule: string;
-  type: string;
-  num: number;
-  page: number;
-  location: string;
-  disableBackup: boolean;
-  engine: string;
+  gl?: string;
+  hl?: string;
+  uule?: string;
+  type?: string;
+  num?: number;
+  page?: number;
+  location?: string;
+  disableBackup?: boolean;
+  engine?: string;
 
   constructor(
     q: string,
-    gl: string,
-    hl: string,
-    uule: string,
-    type: string,
-    num: number,
-    page: number,
-    location: string,
-    disableBackup: boolean,
-    engine: string
+    gl?: string,
+    hl?: string,
+    uule?: string,
+    type?: string,
+    num?: number,
+    page?: number,
+    location?: string,
+    disableBackup?: boolean,
+    engine?: string
   ) {
     this.q = q;
     this.gl = gl;

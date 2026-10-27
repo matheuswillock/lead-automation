@@ -24,9 +24,9 @@ export const GenerateCsvContent = (
     return;
   }
 
-  const { q, location } = searchLeads.searchParameters ?? { q: '', location: '' };
+  const { q } = searchLeads.searchParameters ?? { q: '' };
 
-  const excelFilename = `Leads-${q}-${location}-${new Date().toISOString().split('T')[0]}.xlsx`;
+  const excelFilename = `Leads-${q}-${new Date().toISOString().split('T')[0]}.xlsx`;
 
   const table: TableCsvRow[] = [];
 

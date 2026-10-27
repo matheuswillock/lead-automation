@@ -1,5 +1,5 @@
 import { Main } from "@/app/api/useCases/generateLeads";
-import { InputSerper } from "@/services/SerperService/Serper";
+import { InputSerper, MAX_SERPER_PAGES } from "@/services/SerperService/Serper";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
@@ -9,11 +9,18 @@ export async function POST(req: NextRequest) {
     }
     const { input, lastPage }: { input: InputSerper; lastPage: number } = await req.json();
 
-    if (!input || !lastPage) {
-      return NextResponse.json({ error: "Input and lastPage are required" }, { status: 400 });
+    if (!input || typeof input.query !== "string" || !input.query.trim()) {
+      return NextResponse.json({ error: "A search query is required" }, { status: 400 });
     }
 
-    const apiKey = process.env.SERPER_API_KEY;
+    if (!Number.isInteger(lastPage) || lastPage < 1 || lastPage > MAX_SERPER_PAGES) {
+      return NextResponse.json(
+        { error: `lastPage must be an integer between 1 and ${MAX_SERPER_PAGES}` },
+        { status: 400 },
+      );
+    }
+
+    const apiKey = process.env.SERPER_API_KEY?.trim();
 
     if (!apiKey) return NextResponse.json(
       { error: "API key not configured" },
@@ -32,4 +39,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message || "Erro ao gerar leads" }, { status: 500 });
   }
 }
-

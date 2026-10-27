@@ -5,26 +5,36 @@ import { Output } from "@/domain/Output";
 import { OutputLocations } from "../../../domain/Dto/OutputLocations";
 import { InputLocations } from "../../../domain/Dto/InputLocations";
 
-const BASE_URL = process.env.SERPER_API_URL;
-const DEV_BASE_URL = process.env.SERPER_DEV_API_URL;
-const API_KEY = process.env.SERPER_API_KEY;
+const DEFAULT_PLACES_URL = "https://google.serper.dev/places";
+
+const getPlacesUrl = (): string => {
+  const configuredUrl = process.env.SERPER_API_URL?.trim();
+  if (!configuredUrl) return DEFAULT_PLACES_URL;
+
+  const normalizedUrl = configuredUrl.replace(/\/+$/, "");
+  return normalizedUrl.endsWith("/places")
+    ? normalizedUrl
+    : `${normalizedUrl}/places`;
+};
 
 export const SerperApi = {
   places: async (query: InputSearchLead, apiKey?: string): Promise<Output> => {
     try {
 
-      const key = apiKey ?? API_KEY;
+      const key = apiKey?.trim() || process.env.SERPER_API_KEY;
+      const baseUrl = getPlacesUrl();
       if (!query || !key) {
         throw new Error("Invalid query or API key");
       }
 
-      if (!BASE_URL) {
-        throw new Error("Base URL is not configured");
+      if (!query.q?.trim()) {
+        throw new Error("A search query is required");
       }
 
-      const response = await axios.post(`${BASE_URL}`, query, {
+      const response = await axios.post(baseUrl, query, {
         headers: {
           "X-API-KEY": key,
+          "Content-Type": "application/json",
         },
       });
 
@@ -46,22 +56,18 @@ export const SerperApi = {
 
     } catch (error: any) {
       const errorMessage = error.message || "Unknown error";
-      console.error("Error in SerperApi.search:", error);
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        console.error("Error response headers:", error.response.headers);
-      } else if (error.request) {
-        console.error("Error request:", error.request);
-      } else {
-        console.error("Error message:", error.message);
-      }
-      return new Output(false, [], [errorMessage], null);
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      const safeMessage = status
+        ? `Serper Places request failed with HTTP ${status}`
+        : errorMessage;
+      console.error("Error in SerperApi.places:", safeMessage);
+      return new Output(false, [], [safeMessage], null);
     }
   },
 
   getLocations: async (input: InputLocations): Promise<Output> => {
     try {
+      const DEV_BASE_URL = process.env.SERPER_DEV_API_URL;
       
       if (!DEV_BASE_URL) {
         throw new Error("DEV Base URL is not configured");

@@ -89,8 +89,9 @@ Crie um arquivo `.env` na raiz do projeto:
 
 ```env
 # Serper API (Google Places)
-SERPER_API_URL=https://google.serper.dev/places
 SERPER_API_KEY=sua_chave_aqui
+# Opcional; por padrão a aplicação usa https://google.serper.dev/places
+SERPER_API_URL=https://google.serper.dev/places
 
 # Database PostgreSQL
 POSTGRES_USER=seu_usuario
@@ -127,6 +128,23 @@ npm run prisma:migrate
 # Popular banco (opcional)
 npm run prisma:seed
 ```
+
+### Busca de locais com Serper
+
+A geração de leads usa `POST https://google.serper.dev/places`, com `X-API-KEY` e JSON. A chave deve ficar apenas no ambiente do servidor (`.env.local` ou `.env`), nunca no navegador nem em arquivos versionados.
+
+Corpo enviado pela aplicação:
+
+```json
+{
+  "q": "clínica odontológica Jundiaí, SP",
+  "gl": "br",
+  "hl": "pt-br",
+  "page": 1
+}
+```
+
+A cidade digitada em Localização é anexada ao `q`; a aplicação não envia o parâmetro `location` do Serper, porque ele só aceita o nome canônico do Google (ex.: `Jundiai,State of Sao Paulo,Brazil`) e ignora texto livre, devolvendo resultados do país todo (testado em 2026-10-27). `gl` é o código de país ISO de duas letras. O Playground do Serper mostra 10 resultados por página e 1 crédito por consulta Places; a aplicação limita cada execução a 10 páginas. Três buscas de uma página retornam até 30 candidatos brutos, não 30 leads qualificados. Para buscar 30 leads qualificados em três nichos e quatro regiões, planeje até 12 consultas (até 120 candidatos brutos), valide manualmente cada registro e pare quando atingir a meta; confirme o custo e o saldo antes de rodar o lote.
 
 ### 5. Inicie o Servidor de Desenvolvimento
 
@@ -197,6 +215,7 @@ npm run start            # Inicia servidor de produção
 
 # Qualidade de Código
 npm run lint             # Executa ESLint
+npm test                 # Executa os testes de integração Serper locais (sem consumir créditos)
 
 # Prisma (Database)
 npm run prisma:generate  # Gera Prisma Client

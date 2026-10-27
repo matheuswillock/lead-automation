@@ -1,4 +1,4 @@
-import { InputSerper } from '@/services/SerperService/Serper';
+import { InputSerper, MAX_SERPER_PAGES } from '@/services/SerperService/Serper';
 import OutputSearchLead from "@/domain/Dto/OutputSearchLead";
 import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
 import { Output } from '@/domain/Output';
@@ -14,20 +14,30 @@ export interface MainProps {
 }
 
 export const Main = async ({input, lastPage, apiKey} : MainProps) : Promise<Output> => {
+  if (!input || !input.query?.trim()) {
+    return new Output(false, [], ["A search query is required"], null);
+  }
+
+  if (!Number.isInteger(lastPage) || lastPage < 1 || lastPage > MAX_SERPER_PAGES) {
+    return new Output(false, [], [`lastPage must be between 1 and ${MAX_SERPER_PAGES}`], null);
+  }
+
   const searchLeads: OutputSearchLead = new OutputSearchLead();
   searchLeads.credits = 0;
-  const resolvedApiKey = apiKey ?? process.env.SERP_API_KEY;
+  const resolvedApiKey = apiKey?.trim() || process.env.SERPER_API_KEY;
 
   if (!resolvedApiKey) {
     console.error('API key is required.');
     return OutputGenerateLeads.CreateOutput(undefined, undefined);
   }
 
-  for (let page = input.page; page <= lastPage ; page++) {
-    input.page = page;
+  const firstPage = Number.isInteger(input.page) && input.page > 0 ? input.page : 1;
+
+  for (let page = firstPage; page <= lastPage ; page++) {
+    const pageInput = { ...input, page };
 
     try {
-      const results = await GetLeads(input);
+      const results = await GetLeads(pageInput, resolvedApiKey);
 
       if (!results) {
         console.warn(`No valid results found for page ${page}`);
@@ -44,7 +54,7 @@ export const Main = async ({input, lastPage, apiKey} : MainProps) : Promise<Outp
         ];
       }
 
-      searchLeads.credits += 1;
+      searchLeads.credits += results.credits ?? 1;
 
     } catch (error) {
       console.error('Error fetching leads:', error);

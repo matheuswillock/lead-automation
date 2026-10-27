@@ -7,11 +7,13 @@ import { Output } from "@/domain/Output";
 
 export interface InputSerper {
   query: string;
-  location: string;
+  location?: string;
   country: string;
   language: string;
   page: number;
 }
+
+export const MAX_SERPER_PAGES = 10;
 
 export const GetLocations = async (query: string, limit: number) : Promise<OutputLocations>  => {
   try {
