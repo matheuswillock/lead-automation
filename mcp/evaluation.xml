@@ -1,0 +1,42 @@
+<evaluation>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.7: [{"title":"Pixel Auto","phoneNumber":"111","rating":4.8},{"title":"Vale Auto","website":"https://vale.example","phoneNumber":"222","rating":4.9},{"title":"Novo Auto","rating":4.8}]. Return only the title remaining after both calls.</question>
+    <answer>Pixel Auto</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.8: [{"title":"Clinica Vale","phoneNumber":"333","rating":4.9},{"title":"Clinica Sul","website":"https://clinicasul.example","rating":5},{"title":"Clinica Norte","phoneNumber":"444","rating":4.7}]. Return only the title remaining after both calls.</question>
+    <answer>Clinica Vale</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.5: [{"title":"Casa Verde","phoneNumber":"555","rating":4.5},{"title":"Casa Azul","phoneNumber":"666","rating":4.4},{"title":"Casa Branca","website":"https://casabranca.example","phoneNumber":"777","rating":4.9}]. Return only the title remaining after both calls.</question>
+    <answer>Casa Verde</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.6: [{"title":"Odonto Central","phoneNumber":"888","rating":4.6},{"title":"Odonto Leste","website":"https://odontoleste.example","rating":4.9},{"title":"Odonto Oeste","phoneNumber":"999","rating":4.5}]. Return only the title remaining after both calls.</question>
+    <answer>Odonto Central</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.9: [{"title":"Mercado Bom","phoneNumber":"101","rating":4.8},{"title":"Mercado Bom Dia","phoneNumber":"102","rating":4.9},{"title":"Mercado Ideal","website":"https://mercadoideal.example","phoneNumber":"103","rating":5}]. Return only the title remaining after both calls.</question>
+    <answer>Mercado Bom Dia</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.0: [{"title":"Studio Mar","phoneNumber":"201","rating":4.2},{"title":"Studio Sol","phoneNumber":"202","rating":3.9},{"title":"Studio Lua","website":"https://studiolua.example","phoneNumber":"203","rating":5}]. Return only the title remaining after both calls.</question>
+    <answer>Studio Mar</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.7: [{"title":"Hotel Aurora","phoneNumber":"301","rating":4.7},{"title":"Hotel Serra","phoneNumber":"302","rating":4.6},{"title":"Hotel Lago","website":"https://hotel-lago.example","phoneNumber":"303","rating":5}]. Return only the title remaining after both calls.</question>
+    <answer>Hotel Aurora</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.3: [{"title":"Pet Shop Arca","phoneNumber":"401","rating":4.3},{"title":"Pet Shop Pata","website":"https://pata.example","phoneNumber":"402","rating":4.9},{"title":"Pet Shop Focinho","phoneNumber":"403","rating":4.2}]. Return only the title remaining after both calls.</question>
+    <answer>Pet Shop Arca</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.9: [{"title":"Oficina Norte","phoneNumber":"501","rating":4.9},{"title":"Oficina Sul","website":"https://oficinasul.example","phoneNumber":"502","rating":4.8},{"title":"Oficina Leste","website":"https://oficinaleste.example","phoneNumber":"503","rating":5}]. Return only the title remaining after both calls.</question>
+    <answer>Oficina Norte</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Call leadsfy_filter_candidates twice on these mock candidates: first with semWebsite=true and hasPhone=true, then pass the returned candidates back with minRating=4.8: [{"title":"Padaria Manha","phoneNumber":"601","rating":4.7},{"title":"Padaria Trigo","phoneNumber":"602","rating":4.8},{"title":"Padaria Forno","website":"https://padariaforno.example","phoneNumber":"603","rating":5}]. Return only the title remaining after both calls.</question>
+    <answer>Padaria Trigo</answer>
+  </qa_pair>
+</evaluation>

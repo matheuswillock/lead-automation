@@ -23,7 +23,7 @@ export function useOnboarding(user: User | null) {
       setError(null)
 
       // Primeiro, verificar se o usuário já existe
-      const checkResponse = await fetch(`/api/onboarding?supabaseId=${user.id}`)
+      const checkResponse = await fetch('/api/onboarding')
       
       if (checkResponse.ok) {
         const existingData = await checkResponse.json()
@@ -32,6 +32,13 @@ export function useOnboarding(user: User | null) {
           isNew: false,
         })
         return
+      }
+
+      // Um perfil só pode ser criado se a API confirmou que ele não existe.
+      // Qualquer outro status (por exemplo 401 ou 500) não deve tentar criar
+      // um segundo perfil e mascarar a causa original.
+      if (checkResponse.status !== 404) {
+        throw new Error('Não foi possível verificar sua conta. Atualize a página e entre novamente.')
       }
 
       // Se não existir, criar novo usuário
@@ -49,7 +56,7 @@ export function useOnboarding(user: User | null) {
       })
 
       if (!createResponse.ok) {
-        throw new Error('Erro ao criar usuário')
+        throw new Error('Não foi possível criar sua conta. Tente entrar novamente.')
       }
 
       const newData = await createResponse.json()
@@ -77,7 +84,7 @@ export function useOnboarding(user: User | null) {
     if (!user) return
 
     try {
-      const response = await fetch(`/api/onboarding?supabaseId=${user.id}`)
+      const response = await fetch(`/api/onboarding`)
       if (response.ok) {
         const updatedData = await response.json()
         setData({

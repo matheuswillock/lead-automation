@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ProfileService } from '@/services/ProfileService/ProfileService'
 import { SubscriptionService } from '@/services/SubscriptionService/SubscriptionService'
-import { getAuthenticatedProfile, getAuthenticatedUser } from '@/lib/supabase/authenticated-profile'
+import { getAuthenticatedUser } from '@/lib/supabase/authenticated-profile'
+import { ProfileService } from '@/services/ProfileService/ProfileService'
 
 export async function POST(request: NextRequest) {
   try {
@@ -53,12 +53,14 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    const profile = await getAuthenticatedProfile()
+    const user = await getAuthenticatedUser()
+    if (!user) return NextResponse.json({ error: 'Não autenticado' }, { status: 401 })
+    const profile = await ProfileService.getProfileBySupabaseId(user.id)
 
     if (!profile) {
       return NextResponse.json(
-        { error: 'Não autenticado ou perfil não encontrado' },
-        { status: 401 }
+        { error: 'Perfil não encontrado' },
+        { status: 404 }
       )
     }
 

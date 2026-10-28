@@ -1,0 +1,6 @@
+[mcp_servers.leadsfy]
+command = "npm"
+args = [
+    "run",
+    "mcp",
+]

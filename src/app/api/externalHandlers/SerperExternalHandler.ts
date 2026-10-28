@@ -2,8 +2,6 @@ import axios from "axios";
 import InputSearchLead from "../../../domain/Dto/InputSearchLead";
 import OutputSearchLead from '../../../domain/Dto/OutputSearchLead';
 import { Output } from "@/domain/Output";
-import { OutputLocations } from "../../../domain/Dto/OutputLocations";
-import { InputLocations } from "../../../domain/Dto/InputLocations";
 
 const DEFAULT_PLACES_URL = "https://google.serper.dev/places";
 
@@ -18,6 +16,26 @@ const getPlacesUrl = (): string => {
 };
 
 export const SerperApi = {
+  placesBatch: async (queries: InputSearchLead[], apiKey?: string): Promise<Output[]> => {
+    try {
+      const key = apiKey?.trim() || process.env.SERPER_API_KEY;
+      if (!queries?.length || !key || queries.some((query) => !query?.q?.trim())) {
+        throw new Error("Invalid queries or API key");
+      }
+      const response = await axios.post(getPlacesUrl(), queries, {
+        headers: { "X-API-KEY": key, "Content-Type": "application/json" },
+      });
+      if (!Array.isArray(response?.data) || response.data.length !== queries.length) {
+        throw new Error("Invalid Serper Places batch response");
+      }
+      return response.data.map((item: any) => OutputSearchLead.CreateOutput(item.searchParameters, item.places, item.credits));
+    } catch (error: any) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      const message = status ? `Serper Places request failed with HTTP ${status}` : error.message || "Unknown error";
+      console.error("Error in SerperApi.placesBatch:", message);
+      return [new Output(false, [], [message], null)];
+    }
+  },
   places: async (query: InputSearchLead, apiKey?: string): Promise<Output> => {
     try {
 
@@ -64,41 +82,4 @@ export const SerperApi = {
       return new Output(false, [], [safeMessage], null);
     }
   },
-
-  getLocations: async (input: InputLocations): Promise<Output> => {
-    try {
-      const DEV_BASE_URL = process.env.SERPER_DEV_API_URL;
-      
-      if (!DEV_BASE_URL) {
-        throw new Error("DEV Base URL is not configured");
-      }
-
-      // The locations endpoint does not require authentication
-      const response = await axios.get(`${DEV_BASE_URL}locations`, {
-        params: {
-          q: input.query || "",
-          limit: input.limit || 25,
-        },
-      });
-
-      if (!response.data || response.data.length === 0) {
-        console.warn("No locations found");
-        return OutputLocations.CreateOutput([]);
-      }
-      return OutputLocations.CreateOutput(response.data || []);
-    } catch (error: any) {
-      console.error("Error in SerperApi.getLocations:", error);
-      if (error.response) {
-        console.error("Error response data:", error.response.data);
-        console.error("Error response status:", error.response.status);
-        console.error("Error response headers:", error.response.headers);
-      } else if (error.request) {
-        console.error("Error request:", error.request);
-      } else {
-        console.error("Error message:", error.message);
-      }
-      console.warn("Returning empty locations due to error");
-      return OutputLocations.CreateOutput([]);
-    }
-  }
 };

@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "leadsfy": {
+      "command": "npm",
+      "args": ["run", "mcp"],
+      "env": {}
+    }
+  }
+}

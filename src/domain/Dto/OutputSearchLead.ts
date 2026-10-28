@@ -52,6 +52,7 @@ export class SearchParameters {
   type?: string;
   num?: number;
   page?: number;
+  tbs?: string;
   location?: string;
   disableBackup?: boolean;
   engine?: string;
@@ -66,7 +67,8 @@ export class SearchParameters {
     page?: number,
     location?: string,
     disableBackup?: boolean,
-    engine?: string
+    engine?: string,
+    tbs?: string
   ) {
     this.q = q;
     this.gl = gl;
@@ -75,6 +77,7 @@ export class SearchParameters {
     this.type = type;
     this.num = num;
     this.page = page;
+    this.tbs = tbs;
     this.location = location;
     this.disableBackup = disableBackup;
     this.engine = engine;
@@ -94,6 +97,10 @@ export class Place {
   phoneNumber?: string;
   website?: string;
   cid: string;
+  placeId?: string;
+  type?: string;
+  types?: string[];
+  description?: string;
 
   constructor(
     position: number,
@@ -107,7 +114,11 @@ export class Place {
     category: string,
     cid: string,
     phoneNumber?: string,
-    website?: string
+    website?: string,
+    placeId?: string,
+    type?: string,
+    types?: string[],
+    description?: string
   ) {
     this.position = position;
     this.title = title;
@@ -121,5 +132,9 @@ export class Place {
     this.cid = cid;
     this.phoneNumber = phoneNumber;
     this.website = website;
+    this.placeId = placeId;
+    this.type = type;
+    this.types = types;
+    this.description = description;
   }
 }

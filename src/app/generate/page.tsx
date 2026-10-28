@@ -4,20 +4,14 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useState, useEffect, useRef } from "react";
-import { BotMessageSquare, Loader, Search, AlertCircle, Crown, Clock } from "lucide-react";
-import { MessageCircleMoreIcon } from "@/components/ui/message-circle-more";
+import { useState, useEffect } from "react";
+import { BotMessageSquare, Loader, Search, AlertCircle, Crown, SlidersHorizontal } from "lucide-react";
 import { DownloadIcon } from "@/components/ui/download";
-import { SearchIcon } from "@/components/ui/search";
 import { FileCheck2Icon } from "@/components/ui/file-check-2";
 import { MapPinIcon } from "@/components/ui/map-pin";
-import { MapPinHouseIcon } from "@/components/ui/map-pin-house";
 import { MainProps } from "@/app/api/useCases/generateLeads";
 import { InputSerper, MAX_SERPER_PAGES } from "@/services/SerperService/Serper";
 import { GenerateCsvContent } from "@/services/CsvService/CsvCore";
@@ -32,6 +26,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useRouter } from "next/navigation";
 import { NavUser } from '../../components/nav-user';
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { SearchFilters } from "@/components/search-filters";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Home() {
   const router = useRouter();
@@ -59,16 +61,9 @@ export default function Home() {
   const [location, setLocation] = useState<string>("");
   const [leadType, setLeadType] = useState<string>("");
   const [pagesToFetch, setPagesToFetch] = useState<number>(1);
-  const [sendToWhatsApp, setSendToWhatsApp] = useState<boolean>(true);
   const [searchLeads, setSearchLeads] = useState<OutputSearchLead | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isWhatsAppEnabled, setIsWhatsAppEnabled] = useState<boolean>(false);
-  const [whatsappMessage, setWhatsappMessage] = useState<string>(
-    `Olá! Tudo bem? 😊\n\nAqui é o Cheffia — uma solução moderna para gestão de pedidos e pagamentos em restaurantes!\n\nVocê consegue automatizar pedidos, integrar pagamentos via QR Code e muito mais.\n\nGostaria de saber mais? É só responder aqui. 🚀`
-  );
   const [showSuccessBanner, setShowSuccessBanner] = useState<boolean>(false);
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
 
 
@@ -166,15 +161,32 @@ export default function Home() {
     }
   };
 
+  const handleCountryChange = (nextCountryCode: string) => {
+    setCountryCode(nextCountryCode);
+    setLocation("");
+  };
+
+  const searchFiltersProps = {
+    countryCode,
+    location,
+    leadType,
+    pagesToFetch,
+    maxPages: MAX_SERPER_PAGES,
+    isLoading,
+    isOnboardingLoading: onboardingLoading,
+    hasActiveSubscription,
+    isGenerateDisabled,
+    onCountryChange: handleCountryChange,
+    onLocationChange: setLocation,
+    onLeadTypeChange: setLeadType,
+    onPagesChange: setPagesToFetch,
+    onGenerate: handleGenerateLeads,
+  };
+
   return (
-    <div className="min-h-screen w-full bg-background text-foreground">
+    <div className="min-h-screen w-full bg-background text-foreground lg:h-dvh lg:overflow-hidden">
       {/* Header Fixo */}
-      <motion.header
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ type: "spring", stiffness: 100 }}
-        className="fixed top-0 w-full z-50 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-      >
+      <header className="fixed top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <nav className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <Link href="/">
             <motion.div
@@ -211,11 +223,25 @@ export default function Home() {
             <ThemeToggle />
           </div>
         </nav>
-      </motion.header>
+      </header>
 
-      {/* Conteúdo Principal */}
-      <div className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-7xl">
+      <aside className="fixed bottom-0 left-0 top-16 z-30 hidden w-80 flex-col border-r bg-card/70 px-6 py-7 backdrop-blur lg:flex xl:w-96">
+        <div className="mb-7 flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <MapPinIcon className="size-5" />
+          </div>
+          <div>
+            <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Nova busca</p>
+            <h2 className="font-semibold">Defina sua busca</h2>
+          </div>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+          <SearchFilters idPrefix="desktop" {...searchFiltersProps} />
+        </div>
+      </aside>
+
+      <div className="px-4 pb-10 pt-24 sm:px-6 lg:ml-80 lg:h-dvh lg:overflow-hidden lg:px-8 lg:pb-6 lg:pt-20 xl:ml-96">
+        <div className="mx-auto max-w-7xl lg:flex lg:h-full lg:flex-col">
           {/* Alertas de Status */}
           
           {/* Erro de onboarding */}
@@ -299,123 +325,39 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* Título da Página */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="mb-12 text-center"
-          >
+          {/* Título e filtros de busca no mobile */}
+          <div className="mb-6 text-center lg:hidden">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Gerador de <span className="text-primary">leads</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Configure os parâmetros e gere sua lista de leads em segundos.
             </p>
-          </motion.div>
+          </div>
 
-          <main className="grid grid-col-1 lg:grid-cols-5 gap-8">
-            {/* Seção de Configuração */}
-            <motion.section
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="lg:col-span-2 flex flex-col gap-8"
-            >
-              <Card className="border-2 hover:border-primary/50 transition-colors">
-                <CardHeader className="flex items-center space-x-2">
-                  <MapPinIcon />
-                  <CardTitle>Defina sua busca</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="country-code">País (código ISO de 2 letras)</Label>
-                    <Input
-                      id="country-code"
-                      placeholder="br"
-                      value={countryCode}
-                      maxLength={2}
-                      onChange={(event) => setCountryCode(event.target.value.toLowerCase())}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="search-location">Localização</Label>
-                    <Input
-                      id="search-location"
-                      placeholder="Ex.: Jundiaí, SP, Brasil"
-                      value={location}
-                      onChange={(event) => setLocation(event.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lead-type">Tipo de Lead</Label>
-                    <Input
-                      id="lead-type"
-                      placeholder="Ex: Pizzaria"
-                      value={leadType}
-                      onChange={(e) => setLeadType(e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="pages-to-fetch">Páginas (até 10 resultados por página)</Label>
-                    <Input
-                      id="pages-to-fetch"
-                      type="number"
-                      min={1}
-                      max={MAX_SERPER_PAGES}
-                      step={1}
-                      value={pagesToFetch}
-                      onChange={(event) => setPagesToFetch(Number(event.target.value))}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Cada página pode consumir 1 crédito Serper. Use 1 página para um teste pequeno.
-                    </p>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <motion.div
-                    whileHover={{ scale: hasActiveSubscription ? 1.02 : 1 }}
-                    whileTap={{ scale: hasActiveSubscription ? 0.98 : 1 }}
-                    className="w-full"
-                  >
-                    <Button
-                      className="cursor-pointer font-semibold w-full"
-                      onClick={async () => {
-                        await handleGenerateLeads();
-                      }}
-                      disabled={isGenerateDisabled || isLoading}
-                    >
-                      {onboardingLoading ? (
-                        <>
-                          <Loader className="animate-spin" />
-                          Verificando assinatura...
-                        </>
-                      ) : !hasActiveSubscription ? (
-                        <>
-                          <Crown />
-                          Assinatura necessária
-                        </>
-                      ) : (
-                        <>
-                          <SearchIcon />
-                          Gerar Leads
-                        </>
-                      )}
-                    </Button>
-                  </motion.div>
-                </CardFooter>
-              </Card>
-            </motion.section>
+          <div className="mb-5 lg:hidden">
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button type="button" variant="outline" className="w-full justify-center gap-2">
+                  <SlidersHorizontal className="size-4" />
+                  Filtros da busca
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-full sm:max-w-md">
+                <SheetHeader>
+                  <SheetTitle>Filtros da busca</SheetTitle>
+                </SheetHeader>
+                <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-5">
+                  <SearchFilters idPrefix="mobile" {...searchFiltersProps} />
+                </div>
+              </SheetContent>
+            </Sheet>
+          </div>
 
-            {/* Seção de Resultados */}
-            <motion.section
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="lg:col-span-3"
-            >
-              <Card className="h-full border-2">
-                <CardHeader className="flex flex-row items-center justify-between">
+          <main className="min-h-0 lg:flex lg:flex-1">
+            <section className="min-h-0 w-full lg:flex lg:flex-1">
+              <Card className="w-full border-2 lg:flex lg:min-h-0 lg:flex-1 lg:flex-col">
+                <CardHeader className="shrink-0 flex flex-row items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <FileCheck2Icon />
                     <CardTitle>Resultados</CardTitle>
@@ -437,7 +379,7 @@ export default function Home() {
                 </CardHeader>
 
                 {searchLeads ? (
-                  <CardContent>
+                  <CardContent className="lg:flex lg:min-h-0 lg:flex-1 lg:flex-col lg:overflow-hidden">
                     <LeadsTable leads={searchLeads} />
                   </CardContent>
                 ) : (
@@ -456,12 +398,7 @@ export default function Home() {
                         </motion.div>
                       </div>
                     ) : (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5 }}
-                        className="flex flex-col items-center justify-center h-96 text-center text-muted-foreground p-4"
-                      >
+                      <div className="flex h-96 flex-col items-center justify-center p-4 text-center text-muted-foreground">
                         <motion.div
                           animate={{
                             scale: [1, 1.1, 1],
@@ -484,12 +421,12 @@ export default function Home() {
                           Os leads encontrados aparecerão aqui após você clicar
                           em "Gerar Leads".
                         </p>
-                      </motion.div>
+                      </div>
                     )}
                   </CardContent>
                 )}
               </Card>
-            </motion.section>
+            </section>
           </main>
         </div>
       </div>
